@@ -1,6 +1,10 @@
+from groupLecture import groupLecture
+
 class group():
-    def __init__(self, number, day, start_time, end_time):
+    def __init__(self, number):
         self.number = number
-        self.day = day
-        self.start_time = start_time
-        self.end_time = end_time
+        
+    groupLectures = []
+
+    def addLecture(self, groupLecture):
+        self.groupLectures.append(groupLecture)
