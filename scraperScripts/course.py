@@ -1,6 +1,8 @@
 from group import group
 from lecture import lecture 
 from workshop import workshop
+from groupLecture import groupLecture
+import json
 
 class course:
  
@@ -8,15 +10,15 @@ class course:
         self.code = code 
         self.name = name 
         self.semester = semester
+        lectures=[]
+        groups = []
+        workshops = []
 
-    lectures=[]
-    groups = []
-    workshops = []
 
     def addLecture(self, lecture):
         self.lectures.append(lecture)
     
-    def addGroups(self, group):
+    def addGroup(self, group):
         self.groups.append(group)
     
     def addWorkshop(self, workshop):
@@ -44,7 +46,9 @@ class course:
         self.printLectures()
             
 
-    def formatToGroup(self, string):
+    def formatToGroup(self, string, groupName):
+        _group = group(groupName.strip())
+        self.addGroup(_group)
         string = string.replace('-','',1).strip()
         if 'og' in string:
             string = string.split('og')
@@ -59,16 +63,33 @@ class course:
             start_time = time[0]
             end_time = time[1]
 
-            _group = group(len(self.groups), day, start_time, end_time)
-            self.addGroups(_group)
-        
-        
-        self.printGroups()
+            _groupLecture = groupLecture( day, start_time, end_time)
+            _group.addLecture(_groupLecture)
+            print(str(_group.name ) + _groupLecture.day + _groupLecture.start_time +' '+ _groupLecture.end_time )
+         
+       
 
 
 
     def formatToWorkshop(self, string):
-        print(string)
+        string = string.replace('-','',1).strip()
+        if 'og' in string:
+            string = string.split('og')
+        else:
+            string = string.split('and')
+        
+     
+        for el in string:
+            el=el.strip().split('.')
+            day = el[0].strip()
+            time = el[1].split('-')
+            start_time = time[0]
+            end_time = time[1]
+
+            _workshop = workshop(day, start_time, end_time)
+            self.addWorkshop(_workshop)
+        
+        self.printWorkshops()
 
     def stringIsEnglish():
         pass
@@ -80,6 +101,10 @@ class course:
         for lecture in self.lectures:
             print(lecture.day  + lecture.start_time + ' ' + lecture.end_time)
 
-    def printGroups(self):
-        for group in self.groups:
-            print(str(group.number ) + group.day + group.start_time + group.end_time )
+    def printWorkshops(self):
+        for ws in self.workshops:
+            print(ws.day  + ws.start_time + ' ' + ws.end_time)
+
+    def jsonExport(self):
+        print(json.dumps(self.__dict__) )
+  

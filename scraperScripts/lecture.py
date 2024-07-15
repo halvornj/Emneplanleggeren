@@ -3,3 +3,9 @@ class lecture:
         self.day = day
         self.start_time = start_time
         self.end_time = end_time
+
+    def convert(self):
+        pass 
+
+    def JsonExport(self):
+        pass

@@ -33,8 +33,8 @@ def gatherCourseSchedule(semesterPage, semester):
     #schedule = semesterPage.find_all(id='vrtx-semester-links')
     schedule_href = semesterPage.find_all('a', string='Timeplan')
     courseTitle = semesterPage.find('div', class_='vrtx-context-box vrtx-context-box-linked').a.string.split('-')
-    code = courseTitle[0]
-    name = courseTitle[1]
+    code = courseTitle[0].strip()
+    name = courseTitle[1].strip()
 
     _course = course(code, name, semester)
     
@@ -62,13 +62,14 @@ def gatherCourseSchedule(semesterPage, semester):
      
        
         elif 'gruppe' in event.text.lower():
-            _course.formatToGroup(event.span.string)
+            groupName= event.text.split('-')[0].strip()
+            _course.formatToGroup(event.span.string, groupName )
         else:
             _course.formatToWorkshop(event.span.string)
         #print(event.span.text)
         #print(event.text)
 
- 
+    _course.jsonExport()
 
 
 
@@ -111,6 +112,7 @@ def main():
 
     #for link in links:
         #visitCoursePage(link, 'Høst 2024')
+    
 
 main()
 
