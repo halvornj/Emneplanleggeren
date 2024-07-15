@@ -1,3 +1,7 @@
+from group import group
+from lecture import lecture 
+from workshop import workshop
+
 class course:
  
     def __init__(self, code, name, semester):
@@ -12,18 +16,70 @@ class course:
     def addLecture(self, lecture):
         self.lectures.append(lecture)
     
-    def addGroups(self, groups):
-        self.groups.append(groups)
+    def addGroups(self, group):
+        self.groups.append(group)
     
     def addWorkshop(self, workshop):
         self.workshops.append(workshop)
     
     #this method will format and add lecture
     def formatToLecture(self, string):
-        print(string)
+        string = string.replace('-','',1).strip()
+        if 'og' in string:
+            string = string.split('og')
+        else:
+            string = string.split('and')
+        
+     
+        for el in string:
+            el=el.strip().split('.')
+            day = el[0].strip()
+            time = el[1].split('-')
+            start_time = time[0]
+            end_time = time[1]
+
+            _lecture = lecture(day, start_time, end_time)
+            self.addLecture(_lecture)
+        
+        self.printLectures()
+            
 
     def formatToGroup(self, string):
-        pass
+        string = string.replace('-','',1).strip()
+        if 'og' in string:
+            string = string.split('og')
+        else:
+            string = string.split('and')
+        
+        
+        for el in string:
+            el=el.strip().split('.')
+            day = el[0].strip()
+            time = el[1].split('-')
+            start_time = time[0]
+            end_time = time[1]
+
+            _group = group(len(self.groups), day, start_time, end_time)
+            self.addGroups(_group)
+        
+        
+        self.printGroups()
+
+
 
     def formatToWorkshop(self, string):
+        print(string)
+
+    def stringIsEnglish():
         pass
+
+    def convertToNorwegian():
+        pass
+
+    def printLectures(self):
+        for lecture in self.lectures:
+            print(lecture.day  + lecture.start_time + ' ' + lecture.end_time)
+
+    def printGroups(self):
+        for group in self.groups:
+            print(str(group.number ) + group.day + group.start_time + group.end_time )
