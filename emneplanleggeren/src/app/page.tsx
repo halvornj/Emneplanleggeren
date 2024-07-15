@@ -62,34 +62,64 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="w-3/4 bg-white rounded shadow">
+        <div className="w-3/4 bg-white rounded">
           <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse table-fixed ">
+            <table className="min-w-full border-collapse table-fixed [&_td]:h-16">
               <thead>
                 <tr>
-                  <th className="w-1/6 p-2 text-right text-sm bg-gray-100 border-none">
-                    08:00
+                  <th
+                    scope="col"
+                    className="w-1/10 p-0 text-right text-sm bg-gray-100 font-normal border-none"
+                  ></th>
+                  <th scope="col" className="w-1/6 p-2 border">
+                    Today
                   </th>
-                  <th className="w-1/6 p-2 border">Today</th>
-                  <th className="w-1/6 p-2 border">Tuesday, 16/07</th>
-                  <th className="w-1/6 p-2 border">Wednesday, 17/07</th>
-                  <th className="w-1/6 p-2 border">Thursday, 18/07</th>
-                  <th className="w-1/6 p-2 border">Friday, 19/07</th>
+                  <th scope="col" className="w-1/6 p-2 border">
+                    Tuesday, 16/07
+                  </th>
+                  <th scope="col" className="w-1/6 p-2 border">
+                    Wednesday, 17/07
+                  </th>
+                  <th scope="col" className="w-1/6 p-2 border">
+                    Thursday, 18/07
+                  </th>
+                  <th scope="col" className="w-1/6 p-2 border">
+                    Friday, 19/07
+                  </th>
                 </tr>
               </thead>
-              <tbody className="[&_td:nth-child(1)]:text-right text-sm">
+              <tbody
+                className="[&_td:nth-child(1)]:bg-gray-100 
+                              [&_td:nth-child(1)]:text-right 
+                              [&_td:nth-child(1)]:text-sm p-0 
+                              [&_td:nth-child(1)]:align-top
+                              [&_td:nth-child(1)]:font-normal
+                              [&_td:nth-child(1)]:border-none
+                              "
+              >
                 <tr>
-                  <td className="p-2 border">09:00</td>
-                  <td className="p-2 border" />
+                  <td className="border">08:00</td>
+                  <td className="p-2 border">
+                    <div></div>
+                  </td>
                   <td className="p-2 border" />
                   <td className="p-2 border" />
                   <td className="p-2 border" />
                   <td className="p-2 border" />
                 </tr>
                 <tr>
-                  <td className="p-2 border">10:00</td>
+                  <td className="border">09:00</td>
+                  <td className="p-2 border"></td>
+                  <td className="p-2 border" />
+                  <td className="p-2 border" />
+                  <td className="p-2 border" />
+                  <td className="p-2 border" />
+                </tr>
+                <tr>
+                  <td className="border">10:00</td>
                   <td className="p-2 border relative">
-                    <div className="absolute top-1/2 left-0 w-full h-12 bg-purple-300 rounded-lg flex items-center justify-center">
+                    {/* an hour(60 mins) is 4rem. this means a 120 minute lecture is 8rem, and a standard 105-minute lecture is 8rem-25%. */}
+                    <div className="absolute top-1/4 left-0 w-full h-[calc(8rem-25%)] bg-purple-300 rounded-lg flex items-center justify-center">
                       <span className="text-sm font-medium">
                         IN1000
                         <br />
@@ -103,15 +133,7 @@ export default function Home() {
                   <td className="p-2 border" />
                 </tr>
                 <tr>
-                  <td className="p-2 border">11:00</td>
-                  <td className="p-2 border" />
-                  <td className="p-2 border" />
-                  <td className="p-2 border" />
-                  <td className="p-2 border" />
-                  <td className="p-2 border" />
-                </tr>
-                <tr>
-                  <td className="p-2 border">12:00</td>
+                  <td className="border">11:00</td>
                   <td className="p-2 border" />
                   <td className="p-2 border" />
                   <td className="p-2 border relative">
@@ -127,7 +149,7 @@ export default function Home() {
                   <td className="p-2 border" />
                 </tr>
                 <tr>
-                  <td className="p-2 border">13:00</td>
+                  <td className="border">12:00</td>
                   <td className="p-2 border" />
                   <td className="p-2 border" />
                   <td className="p-2 border" />
@@ -135,7 +157,7 @@ export default function Home() {
                   <td className="p-2 border" />
                 </tr>
                 <tr>
-                  <td className="p-2 border">14:00</td>
+                  <td className="border">13:00</td>
                   <td className="p-2 border" />
                   <td className="p-2 border" />
                   <td className="p-2 border" />
@@ -143,7 +165,7 @@ export default function Home() {
                   <td className="p-2 border" />
                 </tr>
                 <tr>
-                  <td className="p-2 border">15:00</td>
+                  <td className="border">14:00</td>
                   <td className="p-2 border" />
                   <td className="p-2 border" />
                   <td className="p-2 border" />
@@ -151,7 +173,15 @@ export default function Home() {
                   <td className="p-2 border" />
                 </tr>
                 <tr>
-                  <td className="p-2 border">16:00</td>
+                  <td className="border">15:00</td>
+                  <td className="p-2 border" />
+                  <td className="p-2 border" />
+                  <td className="p-2 border" />
+                  <td className="p-2 border" />
+                  <td className="p-2 border" />
+                </tr>
+                <tr>
+                  <td className="border">16:00</td>
                   <td className="p-2 border" />
                   <td className="p-2 border" />
                   <td className="p-2 border" />
