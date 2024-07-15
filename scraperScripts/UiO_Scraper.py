@@ -1,11 +1,22 @@
 from bs4 import BeautifulSoup
 import requests
+from course import course
+from group import group
+from lecture import lecture
+from workshop import workshop
+
+
+'''
+notes for my self
+
+I know this code is shit. please help me.
+
+'''
 
 #gathers all course page links and returns them in a list
 def findAllCoursesLinks():
     URL = "https://www.uio.no/studier/emner/alle/"
     page = BeautifulSoup(requests.get(URL).text, "html.parser")
-
     #finding all the href links on the main index page
     courses = page.find_all('td',class_='vrtx-course-description-name')
     links = []
@@ -18,51 +29,77 @@ def findAllCoursesLinks():
 
 
 #this function must be called when from within the semester page 
-def gatherCourseSchedule(semesterPage):
-    schedule = semesterPage.find_all(id='vrtx-semester-links')
-    schedule_href = schedule.find_all('a', string='Timeplan')
+def gatherCourseSchedule(semesterPage, semester):
+    #schedule = semesterPage.find_all(id='vrtx-semester-links')
+    schedule_href = semesterPage.find_all('a', string='Timeplan')
+    courseTitle = semesterPage.find('div', class_='vrtx-context-box vrtx-context-box-linked').a.string.split('-')
+    code = courseTitle[0]
+    name = courseTitle[1]
 
-    lectures = [] #timestamps of all lectures
-    seminars = [] #twodimensional array containing gropus nr 0 to x in outer and the seminar timestamps in the inner array.
+    _course = course(code, name, semester)
+    
 
+    #coverign edge cases, there is english and norvegian, if no schedule found, return.
+    if not schedule_href:
+        schedule_href = semesterPage.find_all('a',string='Schedule')
+    if not schedule_href:
+        return 
+    
+    #formating the href
+    schedule_href = schedule_href[0]['href']
+    print('scanning link :' + schedule_href)
     #visit schedule href 
-    schedulePage = BeautifulSoup(requests.get(schedule_href), "html.parser")
+    schedulePage = BeautifulSoup(requests.get(schedule_href).text, "html.parser")
+    
 
+    #here we gather schedule info
+    schedules = schedulePage.find_all(class_='cs-toc-section-link')
 
+    #adding all teachings to lists
+    for event in schedules:
+        if 'forelesninger' in event.text.lower():
+            _course.formatToLecture(event.span.string)
+     
+       
+        elif 'gruppe' in event.text.lower():
+            _course.formatToGroup(event.span.string)
+        else:
+            _course.formatToWorkshop(event.span.string)
+        #print(event.span.text)
+        #print(event.text)
 
+ 
 
 
 
 #helping function, takes string example v24 or h24, 
 #this is used for searching for schedule links for the given semester
 def visitCoursePage(link, thisSemester, previousSemester): 
-    link = 'https://www.uio.no'+link.replace('index.html', '')+ thisSemester + 'index/html'
-    
+    link = 'https://www.uio.no'+link.replace('/index.html', '')+ '/' + thisSemester + '/index.html'
+    semester = thisSemester
     #first checking if thisSemester plan exists, if not get previous semester
     try: 
 
         page =  BeautifulSoup(requests.get(link).text, "html.parser")
         #continue
-        gatherCourseSchedule(page)
-        
-        
+
     except:
         #if f.eks h24 not exist, check if v24 exists, if not, dont return anything,
         #  we dont store down more than the most recent info from a semester
-        try:
+        #try:
 
-            link = 'https://www.uio.no'+link.replace('index.html', '')+ previousSemester + 'index/html'
-            page = BeautifulSoup(requests.get(link).text, "html.parser")
-            gatherCourseSchedule(page)
-        except:
+        link = link.replace('/index.html', '').replace(thisSemester,'') + previousSemester + '/index.html'
+        page = BeautifulSoup(requests.get(link).text, "html.parser")
+        semester= previousSemester
 
-            print('Error : no page found at '+ link)
-            return 
-     
-    
 
-    
-    
+        #except:
+
+           # print('Error : no page found at '+ link)
+            # return 
+            #return 
+
+    gatherCourseSchedule(page,semester)
 
 def main():
 
@@ -70,7 +107,7 @@ def main():
     #now that we have all the links we can visit each course and gather data
 
     #test
-    visitCoursePage('/studier/emner/hf/ifikk/ANT1500/index.html', 'v24','h24')
+    visitCoursePage('/studier/emner/matnat/ifi/IN1000/', 'h24','v25')
 
     #for link in links:
         #visitCoursePage(link, 'Høst 2024')
