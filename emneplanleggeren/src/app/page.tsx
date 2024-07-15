@@ -17,7 +17,7 @@ import { GroupLecture } from "@/model/GroupLecture";
 
 export default function Home() {
   //!TO TEST
-  const testCourses = [
+  const testCourses: Array<Course> = [
     new Course(
       "IN1000",
       "Introduksjon til objektorientert programmering",
@@ -93,18 +93,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <Calendar courses={testCourses} />
+        <Calendar courses={testCourses as Array<Course>} />
       </div>
     </div>
   );
-}
-
-/*
- * @param lecture: Lecture - The lecture to get the time block size for"
- * @returns String - The height of the lecture block in the timetable, as a string to be used in tailwind as h-{value}
- */
-
-function getTimeBlockSize(lecture: Lecture): String {
-  const duration = lecture.endTime - lecture.startTime;
-  return (duration * 4).toString() + "rem";
 }
