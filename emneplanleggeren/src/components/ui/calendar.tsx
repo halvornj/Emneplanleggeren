@@ -187,7 +187,7 @@ function createTimeBox(
   return (
     <div
       key={id + lecture.day}
-      className={`absolute left-0  w-full rounded-lg flex items-center justify-center bg-opacity-60 z-1 border-solid border-2 align-top `}
+      className={`absolute left-0  w-full rounded-lg flex items-center justify-center bg-opacity-60 z-1 border-solid border-2 align-top p-0 m-0`}
       style={{
         top: topOffset,
         height: height,
@@ -195,13 +195,24 @@ function createTimeBox(
         borderColor: color,
       }}
     >
-      <span className="w-max h-max text-sm font-medium align-top text-right">
+      <span className="w-max h-max text-sm font-medium align-top text-right p-0 m-0">
         <span className="align-top text-right w-full h-full"> {id}</span>
         <br />
-        <span className="w-full h-full">
-          {lecture.startTime.toFixed(2).replace(".", ":")}
+        <span className="w-full h-full p-0 m-0">
+          {`${getTimeStringFormat(lecture.startTime)} "-" ${getTimeStringFormat(
+            lecture.endTime
+          )}`}
         </span>
       </span>
     </div>
   );
+}
+
+function getTimeStringFormat(time: number): string {
+  const hour = Math.floor(time).toString();
+  const minute = ((time - Math.floor(time)) * 0.6)
+    .toFixed(2)
+    .toString()
+    .slice(2);
+  return hour + ":" + minute;
 }
