@@ -116,7 +116,8 @@ class course:
         return json.dumps(
             self,
             default=lambda o: o.__dict__, 
-            indent=4
+            indent=4,
+            ensure_ascii=False
         )
 
     def writeJsonFile(self):
