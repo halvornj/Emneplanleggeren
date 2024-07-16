@@ -116,11 +116,17 @@ class course:
         return json.dumps(
             self,
             default=lambda o: o.__dict__, 
-            sort_keys=True,
             indent=4
         )
 
     def writeJsonFile(self):
         data = self.jsonExport()
         with open('UiO.json', 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+            json.dump(data, f, ensure_ascii=False)
+            #self.readJsonFile('UiO.json')
+
+    def readJsonFile(self, file ):
+        with open(file) as json_data:
+            d = json.load(json_data)
+            json_data.close()
+            print(d)
