@@ -4,8 +4,7 @@ import json
 class group():
     def __init__(self, name):
         self.name = name
-    
-    groupLectures = []
+        self.groupLectures = []
 
     def addLecture(self, groupLecture):
         self.groupLectures.append(groupLecture)
@@ -13,5 +12,12 @@ class group():
     def getNumber(self):
         return self.number
     
-    def JsonExport(self):
-        pass
+    def jsonExport(self):
+        for lect in self.groupLectures:
+            lect = lect.jsonExport()
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__, 
+            sort_keys=True,
+            indent=4
+        )

@@ -5,6 +5,7 @@ from group import group
 from lecture import lecture
 from workshop import workshop
 
+# -*- coding: utf-8 -*-
 
 '''
 notes for my self
@@ -69,7 +70,7 @@ def gatherCourseSchedule(semesterPage, semester):
         #print(event.span.text)
         #print(event.text)
 
-    _course.jsonExport()
+    _course.writeJsonFile()
 
 
 

@@ -10,9 +10,9 @@ class course:
         self.code = code 
         self.name = name 
         self.semester = semester
-        lectures=[]
-        groups = []
-        workshops = []
+        self.lectures=[]
+        self.groups = []
+        self.workshops = []
 
 
     def addLecture(self, lecture):
@@ -106,5 +106,21 @@ class course:
             print(ws.day  + ws.start_time + ' ' + ws.end_time)
 
     def jsonExport(self):
-        print(json.dumps(self.__dict__) )
-  
+        for lect in self.lectures:
+            lect = lect.jsonExport()
+        for gr in self.groups:
+            gr = gr.jsonExport()
+        for ws in self.workshops:
+            ws = ws.jsonExport()
+        
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__, 
+            sort_keys=True,
+            indent=4
+        )
+
+    def writeJsonFile(self):
+        data = self.jsonExport()
+        with open('UiO.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
