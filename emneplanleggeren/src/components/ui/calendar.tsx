@@ -5,8 +5,14 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
   const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16];
   const days = ["man.", "tir.", "ons.", "tor.", "fre."];
   //TODO find more colors, and test them to see if they are visible
-  const colors = ["bg-sky-300", "bg-yellow-300", "bg-purple-300"];
+  // sky-300, yellow-300, purple-300
+  const colors = [
+    "rgba(125, 211, 252,0.6)",
+    "rgba(253, 224, 71, 0.6)",
+    "rgba(216, 180, 254,0.6)",
+  ];
 
+  const codeColorMap = new Map<string, string>();
   const tableList: Array<Array<Array<JSX.Element>>> = [
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
@@ -16,42 +22,29 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
   ];
   courses.forEach((course) => {
     course.lectures.forEach((lecture) => {
-      console.log(
-        "lecture",
-        lecture,
-        "top:",
-        (lecture.startTime - Math.floor(lecture.startTime)) * 50
-      );
       const topOffset: string =
         ((lecture.startTime - Math.floor(lecture.startTime)) * 100).toString() +
         "%";
       const height: string = getTimeBlockSize(lecture);
-      const color: string = colors.pop() || "bg-purple-300";
-      console.log("color", color);
+      if (!codeColorMap.has(course.id)) {
+        codeColorMap.set(course.id, colors[codeColorMap.size]);
+      }
+      const color = codeColorMap.get(course.id) as string;
 
-      console.log("height", height);
-      console.log("topOffset", topOffset);
-      //* i know what you're thinking: why only color in the string template, but offset and height as props?
-      //* well, the color is a constant, and the height and offset are calculated, and aparrently tailwind just silently drops 'em if they're not consant.
       //TODO split horizontal on the width as well. Width is 1/sizeOfList, and left- is 100%-offsetIntoList*width
-      var timeBox = (
-        <div
-          className={`absolute left-0  w-full ${color} rounded-lg flex items-center justify-center bg-opacity-75 border-solid border-2  z-1`}
-          style={{
-            top: topOffset,
-            height: height,
-          }}
-        >
-          <span className="text-sm font-medium">
-            {course.id}
-            <br />
-            todo times
-          </span>
-        </div>
-      );
+      const timeBox = createTimeBox(course.id, lecture, codeColorMap);
       tableList[days.indexOf(lecture.day)][
         hours.indexOf(Math.floor(lecture.startTime))
       ].push(timeBox);
+    });
+    course.groups.forEach((group) => {
+      group.lectures.forEach((groupLecture) => {
+        const timeBox = createTimeBox(course.id, groupLecture, codeColorMap);
+
+        tableList[days.indexOf(groupLecture.day)][
+          hours.indexOf(Math.floor(groupLecture.startTime))
+        ].push(timeBox);
+      });
     });
   });
 
@@ -178,4 +171,37 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
 function getTimeBlockSize(lecture: Lecture): string {
   const duration = lecture.endTime - lecture.startTime;
   return (duration * 4).toString() + "rem";
+}
+
+function createTimeBox(
+  id: string,
+  lecture: Lecture,
+  codeColorMap: Map<string, string>
+): JSX.Element {
+  const topOffset: string =
+    ((lecture.startTime - Math.floor(lecture.startTime)) * 100).toString() +
+    "%";
+  const height: string = getTimeBlockSize(lecture);
+  const color = codeColorMap.get(id) as string;
+
+  return (
+    <div
+      key={id + lecture.day}
+      className={`absolute left-0  w-full rounded-lg flex items-center justify-center bg-opacity-60 z-1 border-solid border-2 align-top `}
+      style={{
+        top: topOffset,
+        height: height,
+        backgroundColor: color,
+        borderColor: color,
+      }}
+    >
+      <span className="w-max h-max text-sm font-medium align-top text-right">
+        <span className="align-top text-right w-full h-full"> {id}</span>
+        <br />
+        <span className="w-full h-full">
+          {lecture.startTime.toFixed(2).replace(".", ":")}
+        </span>
+      </span>
+    </div>
+  );
 }

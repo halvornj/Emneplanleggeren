@@ -2,16 +2,16 @@ import { Group } from "./Group";
 import { Lecture } from "./Lecture";
 
 class Course {
-  readonly id: String;
-  readonly name: String;
-  readonly semester: String;
+  readonly id: string;
+  readonly name: string;
+  readonly semester: string;
   readonly lectures: Array<Lecture>;
   readonly groups: Array<Group>;
   readonly workshops: Array<Workshop>;
   constructor(
-    id: String,
-    name: String,
-    semester: String,
+    id: string,
+    name: string,
+    semester: string,
     lectures: Array<Lecture> = [],
     groups: Array<Group> = [],
     workshops: Array<Workshop> = []
