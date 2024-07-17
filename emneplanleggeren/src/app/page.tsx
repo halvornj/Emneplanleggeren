@@ -14,6 +14,7 @@ import { Course } from "@/model/Course";
 import { Lecture } from "@/model/Lecture";
 import { Group } from "@/model/Group";
 import { GroupLecture } from "@/model/GroupLecture";
+import ChosenBar from "@/components/ui/ChosenBar";
 
 export default function Home() {
   //!TO TEST
@@ -60,41 +61,7 @@ export default function Home() {
         <Button className="bg-teal-800 text-white">Legg til</Button>
       </div>
       <div className="flex items-center flex-col w-full  space-x-4 ">
-        <div className="w-11/12 items-center p-4 bg-white rounded shadow">
-          <h2 className="text-xl font-bold mb-4">Valgte emner</h2>
-          <div className="flex w-full h-full space-x-3">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="in1000" defaultChecked />
-              <label htmlFor="in1000" className="text-sm">
-                IN1000
-                <br />
-                <span className="text-xs text-gray-500">
-                  Introduksjon til obj...
-                </span>
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="in2010" />
-              <label htmlFor="in2010" className="text-sm">
-                IN2010
-                <br />
-                <span className="text-xs text-gray-500">
-                  Algoritmer og data...
-                </span>
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="in1020" defaultChecked />
-              <label htmlFor="in1020" className="text-sm">
-                IN1020
-                <br />
-                <span className="text-xs text-gray-500">
-                  Introduksjon til dat...
-                </span>
-              </label>
-            </div>
-          </div>
-        </div>
+        <ChosenBar courses={activeCourses} />
         <Calendar courses={activeCourses as Array<Course>} />
       </div>
     </div>
