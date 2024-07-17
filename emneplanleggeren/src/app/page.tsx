@@ -17,7 +17,8 @@ import { GroupLecture } from "@/model/GroupLecture";
 
 export default function Home() {
   //!TO TEST
-  const testCourses: Array<Course> = [
+  const activeCourses: Array<Course> = [
+    //todo this is just a test, replace this with something like await fetch("jsonfile") then obv decode json
     new Course(
       "IN1000",
       "Introduksjon til objektorientert programmering",
@@ -38,6 +39,7 @@ export default function Home() {
       [
         new Group("Gruppe 1", [new GroupLecture("tir.", 14.25, 16.0)]),
         new Group("Gruppe 2", [new GroupLecture("ons.", 14.25, 16.0)]),
+        new Group("Gruppe 3", [new GroupLecture("tor.", 14.25, 16.0)]),
       ]
     ),
   ];
@@ -57,10 +59,10 @@ export default function Home() {
         </Select>
         <Button className="bg-teal-800 text-white">Legg til</Button>
       </div>
-      <div className="flex w-full max-w-4xl space-x-4">
-        <div className="w-1/4 p-4 bg-white rounded shadow">
+      <div className="flex items-center flex-col w-full  space-x-4 ">
+        <div className="w-11/12 items-center p-4 bg-white rounded shadow">
           <h2 className="text-xl font-bold mb-4">Valgte emner</h2>
-          <div className="space-y-2">
+          <div className="flex w-full h-full space-x-3">
             <div className="flex items-center space-x-2">
               <Checkbox id="in1000" defaultChecked />
               <label htmlFor="in1000" className="text-sm">
@@ -93,7 +95,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <Calendar courses={testCourses as Array<Course>} />
+        <Calendar courses={activeCourses as Array<Course>} />
       </div>
     </div>
   );

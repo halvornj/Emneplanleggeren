@@ -1,5 +1,8 @@
 import { Course } from "@/model/Course";
+import { GroupLecture } from "@/model/GroupLecture";
 import { Lecture } from "@/model/Lecture";
+import { assert } from "console";
+import { CSSProperties } from "react";
 
 export default function Calendar({ courses }: { courses: Array<Course> }) {
   const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16];
@@ -13,43 +16,73 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
   ];
 
   const codeColorMap = new Map<string, string>();
-  const tableList: Array<Array<Array<JSX.Element>>> = [
+  //this is gonna suck:
+  const lectureIsGroup = new Map<Lecture, string>(); //if lecture is in keys, it is a group lecture and the value is groupname. if not, it is not a group lecture
+  //this could be removed later by rewriting the json and models to reference the other way
+  const lectureCourseIds = new Map<Lecture, string>();
+  const coursesByPeriod: Array<Array<Array<Lecture>>> = [
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
   ];
-  courses.forEach((course) => {
-    course.lectures.forEach((lecture) => {
-      const topOffset: string =
-        ((lecture.startTime - Math.floor(lecture.startTime)) * 100).toString() +
-        "%";
-      const height: string = getTimeBlockSize(lecture);
-      if (!codeColorMap.has(course.id)) {
-        codeColorMap.set(course.id, colors[codeColorMap.size]);
-      }
-      const color = codeColorMap.get(course.id) as string;
+  const boxesByPeriod: Array<Array<Array<JSX.Element>>> = [
+    [[], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], []],
+  ];
 
-      //TODO split horizontal on the width as well. Width is 1/sizeOfList, and left- is 100%-offsetIntoList*width
-      const timeBox = createTimeBox(course.id, lecture, codeColorMap);
-      tableList[days.indexOf(lecture.day)][
+  courses.forEach((course) => {
+    //TODO split horizontal on the width as well. Width is 1/sizeOfList, and left- is 100%-offsetIntoList*width
+    if (!codeColorMap.has(course.id)) {
+      codeColorMap.set(course.id, colors[codeColorMap.size]);
+    }
+    course.lectures.forEach((lecture) => {
+      coursesByPeriod[days.indexOf(lecture.day)][
         hours.indexOf(Math.floor(lecture.startTime))
-      ].push(timeBox);
+      ].push(lecture);
+      lectureCourseIds.set(lecture, course.id);
     });
     course.groups.forEach((group) => {
       group.lectures.forEach((groupLecture) => {
-        const timeBox = createTimeBox(course.id, groupLecture, codeColorMap);
-
-        tableList[days.indexOf(groupLecture.day)][
+        coursesByPeriod[days.indexOf(groupLecture.day)][
           hours.indexOf(Math.floor(groupLecture.startTime))
-        ].push(timeBox);
+        ].push(groupLecture);
+        lectureIsGroup.set(groupLecture, group.name);
+        lectureCourseIds.set(groupLecture, course.id);
+      });
+    });
+  });
+
+  //double matrices baby
+  coursesByPeriod.forEach((day, i) => {
+    day.forEach((hour, j) => {
+      hour.forEach((lecture, k) => {
+        const courseId = lectureCourseIds.get(lecture) as string; //* this seems like i've just thrown in a non-null-assertion on accident
+        const groupName: string | undefined = lectureIsGroup.get(lecture);
+        const color = codeColorMap.get(courseId) as string;
+        boxesByPeriod[i][j].push(
+          createTimeBox(
+            courseId,
+            lecture,
+            {
+              backgroundColor: color,
+              borderColor: color,
+              width: `${(1 / hour.length) * 100}%`,
+              left: `${(k / hour.length) * 100}%`,
+            },
+            groupName
+          )
+        );
       });
     });
   });
 
   return (
-    <div className="w-3/4 bg-white rounded">
+    <div className="w-3/4 min-w-96 bg-white rounded">
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse table-fixed [&_td]:h-16">
           <thead>
@@ -76,9 +109,9 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
             </tr>
           </thead>
           <tbody
-            className="[&_td:nth-child(1)]:bg-gray-100 
-                              [&_td:nth-child(1)]:text-right 
-                              [&_td:nth-child(1)]:text-sm p-0 
+            className="[&_td:nth-child(1)]:bg-gray-100
+                              [&_td:nth-child(1)]:text-right
+                              [&_td:nth-child(1)]:text-sm p-0
                               [&_td:nth-child(1)]:align-top
                               [&_td:nth-child(1)]:font-normal
                               [&_td:nth-child(1)]:border-none
@@ -86,75 +119,75 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
           >
             <tr>
               <td className="border">08:00</td>
-              <td className="p-2 border relative">{tableList[0][0]} </td>
-              <td className="p-2 border relative">{tableList[1][0]} </td>
-              <td className="p-2 border relative">{tableList[2][0]} </td>
-              <td className="p-2 border relative">{tableList[3][0]} </td>
-              <td className="p-2 border relative">{tableList[4][0]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][0]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][0]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][0]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][0]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][0]} </td>
             </tr>
             <tr>
               <td className="border">09:00</td>
-              <td className="p-2 border relative">{tableList[0][1]} </td>
-              <td className="p-2 border relative">{tableList[1][1]} </td>
-              <td className="p-2 border relative">{tableList[2][1]} </td>
-              <td className="p-2 border relative">{tableList[3][1]} </td>
-              <td className="p-2 border relative">{tableList[4][1]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][1]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][1]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][1]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][1]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][1]} </td>
             </tr>
             <tr>
               <td className="border">10:00</td>
-              <td className="p-2 border relative">{tableList[0][2]} </td>
-              <td className="p-2 border relative">{tableList[1][2]} </td>
-              <td className="p-2 border relative">{tableList[2][2]} </td>
-              <td className="p-2 border relative">{tableList[3][2]} </td>
-              <td className="p-2 border relative">{tableList[4][2]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][2]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][2]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][2]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][2]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][2]} </td>
             </tr>
             <tr>
               <td className="border">11:00</td>
-              <td className="p-2 border relative">{tableList[0][3]} </td>
-              <td className="p-2 border relative">{tableList[1][3]} </td>
-              <td className="p-2 border relative">{tableList[2][3]} </td>
-              <td className="p-2 border relative">{tableList[3][3]} </td>
-              <td className="p-2 border relative">{tableList[4][3]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][3]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][3]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][3]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][3]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][3]} </td>
             </tr>
             <tr>
               <td className="border">12:00</td>
-              <td className="p-2 border relative">{tableList[0][4]} </td>
-              <td className="p-2 border relative">{tableList[1][4]} </td>
-              <td className="p-2 border relative">{tableList[2][4]} </td>
-              <td className="p-2 border relative">{tableList[3][4]} </td>
-              <td className="p-2 border relative">{tableList[4][4]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][4]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][4]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][4]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][4]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][4]} </td>
             </tr>
             <tr>
               <td className="border">13:00</td>
-              <td className="p-2 border relative">{tableList[0][5]} </td>
-              <td className="p-2 border relative">{tableList[1][5]} </td>
-              <td className="p-2 border relative">{tableList[2][5]} </td>
-              <td className="p-2 border relative">{tableList[3][5]} </td>
-              <td className="p-2 border relative">{tableList[4][5]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][5]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][5]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][5]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][5]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][5]} </td>
             </tr>
             <tr>
               <td className="border">14:00</td>
-              <td className="p-2 border relative">{tableList[0][6]} </td>
-              <td className="p-2 border relative">{tableList[1][6]} </td>
-              <td className="p-2 border relative">{tableList[2][6]} </td>
-              <td className="p-2 border relative">{tableList[3][6]} </td>
-              <td className="p-2 border relative">{tableList[4][6]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][6]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][6]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][6]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][6]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][6]} </td>
             </tr>
             <tr>
               <td className="border">15:00</td>
-              <td className="p-2 border relative">{tableList[0][7]} </td>
-              <td className="p-2 border relative">{tableList[1][7]} </td>
-              <td className="p-2 border relative">{tableList[2][7]} </td>
-              <td className="p-2 border relative">{tableList[3][7]} </td>
-              <td className="p-2 border relative">{tableList[4][7]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][7]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][7]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][7]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][7]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][7]} </td>
             </tr>
             <tr>
               <td className="border">16:00</td>
-              <td className="p-2 border relative">{tableList[0][8]} </td>
-              <td className="p-2 border relative">{tableList[1][8]} </td>
-              <td className="p-2 border relative">{tableList[2][8]} </td>
-              <td className="p-2 border relative">{tableList[3][8]} </td>
-              <td className="p-2 border relative">{tableList[4][8]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[0][8]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][8]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][8]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][8]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][8]} </td>
             </tr>
           </tbody>
         </table>
@@ -172,38 +205,38 @@ function getTimeBlockSize(lecture: Lecture): string {
   const duration = lecture.endTime - lecture.startTime;
   return (duration * 4).toString() + "rem";
 }
-
+//*this should be a component
 function createTimeBox(
   id: string,
   lecture: Lecture,
-  codeColorMap: Map<string, string>
+  style: CSSProperties,
+  groupName?: string
 ): JSX.Element {
   const topOffset: string =
     ((lecture.startTime - Math.floor(lecture.startTime)) * 100).toString() +
     "%";
   const height: string = getTimeBlockSize(lecture);
-  const color = codeColorMap.get(id) as string;
 
   return (
     <div
       key={id + lecture.day}
-      className={`absolute left-0  w-full rounded-lg flex items-center justify-center bg-opacity-60 z-1 border-solid border-2 align-top p-0 m-0`}
+      className={`absolute flex-col rounded-lg bg-opacity-60 z-1 border-solid border-2 overflow-hidden`}
       style={{
+        ...style,
         top: topOffset,
         height: height,
-        backgroundColor: color,
-        borderColor: color,
       }}
     >
-      <span className="w-max h-max text-sm font-medium align-top text-right p-0 m-0">
-        <span className="align-top text-right w-full h-full"> {id}</span>
+      <div className="text-center p-1 text-base md:text-lg font-semibold overflow-hidden">
+        {id}
+      </div>
+      <div className="text-center p-0 text-sm md:text-base font-light overflow-hidden">
+        {`${getTimeStringFormat(lecture.startTime)}-${getTimeStringFormat(
+          lecture.endTime
+        )}`}
         <br />
-        <span className="w-full h-full p-0 m-0">
-          {`${getTimeStringFormat(lecture.startTime)} "-" ${getTimeStringFormat(
-            lecture.endTime
-          )}`}
-        </span>
-      </span>
+        {groupName ? groupName : ""}
+      </div>
     </div>
   );
 }
