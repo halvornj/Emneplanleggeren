@@ -3,8 +3,10 @@ import { GroupLecture } from "@/model/GroupLecture";
 import { Lecture } from "@/model/Lecture";
 import { assert } from "console";
 import { CSSProperties } from "react";
+import { useState } from "react";
 
 export default function Calendar({ courses }: { courses: Array<Course> }) {
+  console.debug(courses);
   const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16];
   const days = ["man.", "tir.", "ons.", "tor.", "fre."];
   //TODO find more colors, and test them to see if they are visible
