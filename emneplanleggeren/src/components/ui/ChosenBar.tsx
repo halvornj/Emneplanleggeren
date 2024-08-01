@@ -2,13 +2,17 @@
 
 import { Course } from "@/model/Course";
 import { Checkbox } from "./checkbox";
+import { Button } from "@nextui-org/button";
+import { Clear } from "@/res/clear";
 
 export default function ChosenBar({
   courses,
   checkFunction,
+  removeFunction,
 }: {
   courses: Array<Course>;
   checkFunction: (course: Course, setActive: boolean) => void;
+  removeFunction: (course: Course) => void;
 }) {
   const courseDivs: Array<JSX.Element> = [];
   courses.forEach((course, i) => {
@@ -28,6 +32,15 @@ export default function ChosenBar({
         />
         <label htmlFor={course.id} className="text-sm">
           {course.id}
+          <Button
+            isIconOnly
+            aria-label="remove"
+            size="sm"
+            onClick={() => removeFunction(course)}
+            className="m-2"
+          >
+            <Clear size={12} />
+          </Button>
           <br />
           <span className="text-xs text-gray-500">{abbrCourseName}</span>
         </label>

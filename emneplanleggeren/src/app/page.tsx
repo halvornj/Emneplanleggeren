@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -10,18 +9,21 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import Calendar from "@/components/ui/calendar";
 import { Course } from "@/model/Course";
 import { Lecture } from "@/model/Lecture";
 import { Group } from "@/model/Group";
 import { GroupLecture } from "@/model/GroupLecture";
 import ChosenBar from "@/components/ui/ChosenBar";
-import { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
+import courses from "@/app/courses.json";
+import {
+  Autocomplete,
+  AutocompleteSection,
+  AutocompleteItem,
+} from "@nextui-org/autocomplete";
 
 export default function Home() {
-  const allCourses = fetch("courses.json");
-
   const [activeCourses, setActiveCourses] = useState(
     new Map<Course, boolean>([
       //todo this is just a test, replace this with something like await fetch("jsonfile")
@@ -40,20 +42,6 @@ export default function Home() {
         ),
         true,
       ],
-      [
-        new Course(
-          "IN1020",
-          "Introduksjon til datamaskiner og databehandling",
-          "h24",
-          [new Lecture("ons.", 12.25, 14.0)],
-          [
-            new Group("Gruppe 1", [new GroupLecture("tir.", 14.25, 16.0)]),
-            new Group("Gruppe 2", [new GroupLecture("ons.", 14.25, 16.0)]),
-            new Group("Gruppe 3", [new GroupLecture("tor.", 14.25, 16.0)]),
-          ]
-        ),
-        true,
-      ],
     ])
   );
 
@@ -65,10 +53,8 @@ export default function Home() {
     }
     if (setActive) {
       //if we're supposed to add the course
-      console.debug("course is supposed to be added now:");
       if (!activeCourses.get(course)) {
         //just make sure it ain't aleady there
-        console.debug("Adding course", course);
         setActiveCourses(new Map(activeCourses.set(course, true)));
       } else {
         console.error(
@@ -77,42 +63,67 @@ export default function Home() {
       }
     } else {
       //if we're supposed to remove the course
-      console.debug("course is supposed to be removed now:");
       if (activeCourses.has(course)) {
-        console.debug("Removing course", course);
         setActiveCourses(new Map(activeCourses.set(course, false)));
       } else {
         console.error("Course not in active ActiveCourses, cannot be removed!");
       }
     }
   }
+  function removeCourse(this: any, course: Course) {
+    const newMap = new Map(activeCourses);
+    const removed = newMap.delete(course);
+    if (removed) setActiveCourses(newMap);
+  }
 
-  console.debug(activeCourses);
+  function onSelectionChange(key: React.Key) {
+    if (
+      Array.from(activeCourses.keys()).filter((course) => {
+        return course.id == key.toString();
+      }).length == 0
+    ) {
+      //if the key of the seletced course is not already in the selected courses
+      const course = courses.find((course) => {
+        return course.id == key.toString();
+      }) as Course;
+      setActiveCourses(new Map(activeCourses.set(course, true)));
+    }
+  }
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-gray-100 p-4">
       <div className="flex items-center w-full max-w-4xl mb-4 space-x-4">
-        <Input placeholder="Emnekode" className="flex-1" />
+        <Autocomplete
+          label="emnekode"
+          color={"default"}
+          className="flex-1"
+          defaultItems={courses}
+          onSelectionChange={(key) => {
+            if (key != null) {
+              //stupid hack to make sure input is valid
+              onSelectionChange(key);
+            }
+          }}
+        >
+          {(item) => (
+            <AutocompleteItem key={item.id}>{item.id}</AutocompleteItem>
+          )}
+        </Autocomplete>
         <Select>
           <SelectTrigger className="w-32">
             <SelectValue placeholder="UiO" />
           </SelectTrigger>
           <SelectContent>
-            {Array.from(activeCourses.keys()).map((course) => {
-              return (
-                <SelectItem value={course.id.toLowerCase()}>
-                  {course.id}
-                </SelectItem>
-              );
-            })}
+            <SelectItem value="uio">UiO</SelectItem>
+            <SelectItem value="ntnu">NTNU</SelectItem>
           </SelectContent>
         </Select>
-        <Button className="bg-teal-800 text-white">Legg til</Button>
       </div>
       <div className="flex items-center flex-col w-full  space-x-4 ">
         <ChosenBar
           courses={Array.from(activeCourses.keys())}
           checkFunction={toggleCourse}
+          removeFunction={removeCourse}
         />
         <Calendar
           courses={Array.from(activeCourses.keys()).filter((course) => {
