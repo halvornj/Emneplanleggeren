@@ -3,10 +3,10 @@ import { Lecture } from "./Lecture";
 
 class Group {
   readonly name: string;
-  readonly lectures: Array<Lecture>;
+  readonly groupLectures: Array<Lecture>;
   constructor(name: string, groupLectures: Array<GroupLecture> = []) {
     this.name = name;
-    this.lectures = groupLectures;
+    this.groupLectures = groupLectures;
   }
 }
 export { Group };

@@ -16,7 +16,7 @@ import { Group } from "@/model/Group";
 import { GroupLecture } from "@/model/GroupLecture";
 import ChosenBar from "@/components/ui/ChosenBar";
 import React, { use, useEffect, useState } from "react";
-import courses from "@/app/courses.json";
+import rawCourses from "@/data/UiO.json";
 import {
   Autocomplete,
   AutocompleteSection,
@@ -24,50 +24,41 @@ import {
 } from "@nextui-org/autocomplete";
 
 export default function Home() {
+  const courses = JSON.parse(rawCourses) as Array<Course>;
+
   const [activeCourses, setActiveCourses] = useState(
-    new Map<Course, boolean>([
-      //todo this is just a test, replace this with something like await fetch("jsonfile")
-      [
-        new Course(
-          "IN1000",
-          "Introduksjon til objektorientert programmering",
-          "h24",
-          [new Lecture("man.", 10.25, 12.0)],
-          [
-            new Group("gruppe 1", [
-              new GroupLecture("tir.", 12.25, 14.0),
-              new GroupLecture("tor.", 14.25, 16.0),
-            ]),
-          ]
-        ),
-        true,
-      ],
-    ])
+    new Map<Course, Group | null>([])
   );
 
-  function toggleCourse(this: any, course: Course, setActive: boolean) {
-    console.debug("Toggling course", course, setActive);
+  const [displayCourses, setDisplayCourses] = useState<Array<Course>>([]);
+
+  function toggleCourse(
+    this: any,
+    course: Course,
+    selectedGroup: Group | null
+  ) {
+    console.debug("Toggling course", course, selectedGroup);
     if (!activeCourses.has(course)) {
       console.error("Course not in active ActiveCourses, cannot be toggled!");
       return;
     }
-    if (setActive) {
+    if (selectedGroup != null) {
       //if we're supposed to add the course
-      if (!activeCourses.get(course)) {
-        //just make sure it ain't aleady there
-        setActiveCourses(new Map(activeCourses.set(course, true)));
-      } else {
-        console.error(
-          "Course already in active ActiveCourses, cannot be re-added!"
-        );
-      }
+
+      const truncatedCourse = { ...course };
+      truncatedCourse.groups = [selectedGroup];
+      const newDisplayCourses = displayCourses.filter((displayCourse) => {
+        return displayCourse.id != course.id;
+      });
+      setDisplayCourses([...newDisplayCourses, truncatedCourse]);
     } else {
       //if we're supposed to remove the course
-      if (activeCourses.has(course)) {
-        setActiveCourses(new Map(activeCourses.set(course, false)));
-      } else {
-        console.error("Course not in active ActiveCourses, cannot be removed!");
-      }
+
+      setDisplayCourses(
+        displayCourses.filter((displayCourse) => {
+          return displayCourse.id != course.id;
+        })
+      );
     }
   }
   function removeCourse(this: any, course: Course) {
@@ -86,7 +77,12 @@ export default function Home() {
       const course = courses.find((course) => {
         return course.id == key.toString();
       }) as Course;
-      setActiveCourses(new Map(activeCourses.set(course, true)));
+      if (course.groups.length == 0) {
+        setActiveCourses(new Map(activeCourses.set(course, null)));
+      } else {
+        setActiveCourses(new Map(activeCourses.set(course, course.groups[0])));
+        toggleCourse(course, course.groups[0]);
+      }
     }
   }
 
@@ -125,12 +121,7 @@ export default function Home() {
           checkFunction={toggleCourse}
           removeFunction={removeCourse}
         />
-        <Calendar
-          courses={Array.from(activeCourses.keys()).filter((course) => {
-            //filter out the ActiveCourses that are not active
-            return activeCourses.get(course) == true;
-          })}
-        />
+        <Calendar courses={displayCourses} />
       </div>
     </div>
   );

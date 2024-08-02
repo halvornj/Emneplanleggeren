@@ -1,13 +1,14 @@
 import { Course } from "@/model/Course";
 import { GroupLecture } from "@/model/GroupLecture";
 import { Lecture } from "@/model/Lecture";
+import { Workshop } from "@/model/Workshop";
 import { assert } from "console";
 import { CSSProperties } from "react";
 import { useState } from "react";
 
 export default function Calendar({ courses }: { courses: Array<Course> }) {
   const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16];
-  const days = ["man.", "tir.", "ons.", "tor.", "fre."];
+  const days = ["man", "tir", "ons", "tor", "fre"];
   //TODO find more colors, and test them to see if they are visible
   // sky-300, yellow-300, purple-300
   const colors = [
@@ -27,8 +28,10 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], []],
   ];
   const boxesByPeriod: Array<Array<Array<JSX.Element>>> = [
+    [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
     [[], [], [], [], [], [], [], []],
@@ -37,7 +40,6 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
   ];
 
   courses.forEach((course) => {
-    //TODO split horizontal on the width as well. Width is 1/sizeOfList, and left- is 100%-offsetIntoList*width
     if (!codeColorMap.has(course.id)) {
       codeColorMap.set(course.id, colors[codeColorMap.size]);
     }
@@ -47,14 +49,27 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
       ].push(lecture);
       lectureCourseIds.set(lecture, course.id);
     });
+    course.workshops.forEach((workshop) => {
+      coursesByPeriod[days.indexOf(workshop.day)][
+        hours.indexOf(Math.floor(workshop.startTime))
+      ].push(workshop);
+      lectureIsGroup.set(workshop, "workshop");
+      lectureCourseIds.set(workshop, course.id);
+    });
+
     course.groups.forEach((group) => {
-      group.lectures.forEach((groupLecture) => {
-        coursesByPeriod[days.indexOf(groupLecture.day)][
-          hours.indexOf(Math.floor(groupLecture.startTime))
-        ].push(groupLecture);
-        lectureIsGroup.set(groupLecture, group.name);
-        lectureCourseIds.set(groupLecture, course.id);
-      });
+      try {
+        group.groupLectures.forEach((groupLecture) => {
+          coursesByPeriod[days.indexOf(groupLecture.day)][
+            hours.indexOf(Math.floor(groupLecture.startTime))
+          ].push(groupLecture);
+          lectureIsGroup.set(groupLecture, group.name);
+          lectureCourseIds.set(groupLecture, course.id);
+        });
+      } catch (e) {
+        console.error("Error in group", group);
+        throw e;
+      }
     });
   });
 
@@ -190,6 +205,14 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
               <td className="p-2 border relative">{boxesByPeriod[3][8]} </td>
               <td className="p-2 border relative">{boxesByPeriod[4][8]} </td>
             </tr>
+            <tr>
+              <td className="border">17:00</td>
+              <td className="p-2 border relative">{boxesByPeriod[0][9]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][9]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][9]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][9]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][9]} </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -220,7 +243,7 @@ function createTimeBox(
 
   return (
     <div
-      key={id + lecture.day}
+      key={id + lecture.day + groupName}
       className={`absolute flex-col rounded-lg bg-opacity-60 z-1 border-solid border-2 overflow-hidden`}
       style={{
         ...style,

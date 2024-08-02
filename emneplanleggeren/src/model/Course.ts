@@ -1,7 +1,8 @@
 import { Group } from "./Group";
 import { Lecture } from "./Lecture";
+import { Workshop } from "./Workshop";
 
-class Course{
+class Course {
   readonly id: string;
   readonly name: string;
   readonly semester: string;
@@ -22,10 +23,6 @@ class Course{
     this.lectures = lectures;
     this.groups = groups;
     this.workshops = workshops;
-  }
-
-  isEqual(other:Course){
-    return this.id == other.id
   }
 }
 export { Course };
