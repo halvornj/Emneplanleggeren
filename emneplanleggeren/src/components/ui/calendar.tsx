@@ -44,10 +44,15 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
       codeColorMap.set(course.id, colors[codeColorMap.size]);
     }
     course.lectures.forEach((lecture) => {
-      coursesByPeriod[days.indexOf(lecture.day)][
-        hours.indexOf(Math.floor(lecture.startTime))
-      ].push(lecture);
-      lectureCourseIds.set(lecture, course.id);
+      try {
+        coursesByPeriod[days.indexOf(lecture.day)][
+          hours.indexOf(Math.floor(lecture.startTime))
+        ].push(lecture);
+        lectureCourseIds.set(lecture, course.id);
+      } catch (e) {
+        console.error("Error in lecture", lecture);
+        throw e;
+      }
     });
     course.workshops.forEach((workshop) => {
       coursesByPeriod[days.indexOf(workshop.day)][
