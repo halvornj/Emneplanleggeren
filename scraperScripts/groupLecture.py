@@ -10,6 +10,6 @@ class groupLecture(lecture):
         return json.dumps(
             self,
             default=lambda o: o.__dict__, 
-            ensure_ascii=False
+            sort_keys=True
      
         )

@@ -10,6 +10,6 @@ class lecture:
     def jsonExport(self):
         return json.dumps(
             self,
-            default=lambda o: o.__dict__,
-            ensure_ascii=False
+            default=lambda o: o.__dict__
+            
         )
