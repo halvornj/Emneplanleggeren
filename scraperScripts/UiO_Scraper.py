@@ -4,16 +4,20 @@ from course import course
 from group import group
 from lecture import lecture
 from workshop import workshop
+from selenium import webdriver 
 
 # -*- coding: utf-8 -*-
 
 '''
 notes for my self
-
 I know this code is shit. please help me.
-
 '''
 
+driver = webdriver.Chrome()
+
+def driverTest():
+    print(driver.get("https://www.uio.no/studier/emner/alle/"))
+    driver.quit()
 #gathers all course page links and returns them in a list
 def findAllCoursesLinks():
     URL = "https://www.uio.no/studier/emner/alle/"

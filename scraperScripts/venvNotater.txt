@@ -1,0 +1,2 @@
+.venv/bin/python3 UiO_Scraper.py //for aa kjore
+.venv/bin/pip install selenium==4.4.3 //for aa installere pakker
