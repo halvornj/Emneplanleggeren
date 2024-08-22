@@ -25,71 +25,27 @@ class course:
         self.workshops.append(workshop)
     
     #this method will format and add lecture
-    def formatToLecture(self, string):
-        string = string.replace('-','',1).strip()
-        if 'og' in string:
-            string = string.split('og')
-        else:
-            string = string.split('and')
-        
-     
-        for el in string:
-            el=el.strip().split('.')
-            day = el[0].strip()
-            time = el[1].split('-')
-            start_time = time[0]
-            end_time = time[1]
+    def formatToLecture(self, day, start_time, end_time):
+        _lecture = lecture(day, start_time, end_time)
+        self.addLecture(_lecture)
+        #self.printLectures()
+        return _lecture
 
-            _lecture = lecture(day, start_time, end_time)
-            self.addLecture(_lecture)
-        
-        self.printLectures()
-            
-
-    def formatToGroup(self, string, groupName):
+    def formatToGroup(self, day, start_time, end_time, groupName):
         _group = group(groupName.strip())
         self.addGroup(_group)
-        string = string.replace('-','',1).strip()
-        if 'og' in string:
-            string = string.split('og')
-        else:
-            string = string.split('and')
+        _groupLecture = groupLecture( day, start_time, end_time)
+        _group.addLecture(_groupLecture)
+        #print(str(_group.name ) + _groupLecture.day + _groupLecture.start_time +' '+ _groupLecture.end_time )
+        return _group
+
+    def formatToWorkshop(self, day, start_time, end_time):
+    
+        _workshop = workshop(day, start_time, end_time)
+        self.addWorkshop(_workshop)
         
-        
-        for el in string:
-            el=el.strip().split('.')
-            day = el[0].strip()
-            time = el[1].split('-')
-            start_time = time[0]
-            end_time = time[1]
-
-            _groupLecture = groupLecture( day, start_time, end_time)
-            _group.addLecture(_groupLecture)
-            print(str(_group.name ) + _groupLecture.day + _groupLecture.start_time +' '+ _groupLecture.end_time )
-         
-       
-
-
-
-    def formatToWorkshop(self, string):
-        string = string.replace('-','',1).strip()
-        if 'og' in string:
-            string = string.split('og')
-        else:
-            string = string.split('and')
-        
-     
-        for el in string:
-            el=el.strip().split('.')
-            day = el[0].strip()
-            time = el[1].split('-')
-            start_time = time[0]
-            end_time = time[1]
-
-            _workshop = workshop(day, start_time, end_time)
-            self.addWorkshop(_workshop)
-        
-        self.printWorkshops()
+        #self.printWorkshops()
+        return _workshop
 
     def stringIsEnglish():
         pass
@@ -116,17 +72,29 @@ class course:
         return json.dumps(
             self,
             default=lambda o: o.__dict__, 
-            indent=4
+            indent=4,
+            ensure_ascii=False
         )
 
     def writeJsonFile(self):
         data = self.jsonExport()
         with open('UiO.json', 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False)
-            #self.readJsonFile('UiO.json')
+            self.readJsonFile('UiO.json')
 
     def readJsonFile(self, file ):
         with open(file) as json_data:
             d = json.load(json_data)
             json_data.close()
             print(d)
+
+    def isLecture(self, activity):
+
+        pass
+
+    def isGroupLecture(self):
+
+        pass 
+
+    def isWorkshop(self):
+        pass

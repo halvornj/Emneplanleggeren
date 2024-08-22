@@ -5,19 +5,17 @@ from group import group
 from lecture import lecture
 from workshop import workshop
 from selenium import webdriver 
+from selenium.webdriver.common.by import By
+
 
 # -*- coding: utf-8 -*-
-
-'''
-notes for my self
-I know this code is shit. please help me.
-'''
 
 driver = webdriver.Chrome()
 
 def driverTest():
     print(driver.get("https://www.uio.no/studier/emner/alle/"))
     driver.quit()
+
 #gathers all course page links and returns them in a list
 def findAllCoursesLinks():
     URL = "https://www.uio.no/studier/emner/alle/"
@@ -30,9 +28,7 @@ def findAllCoursesLinks():
             links.append(a['href'])
     return links
 
-
-
-
+''' funksjonen under er den funksjonen jeg m[ bruke selenium i. Activity divs p[ trykkes p[ og expandes med evenlistener'''
 #this function must be called when from within the semester page 
 def gatherCourseSchedule(semesterPage, semester):
     #schedule = semesterPage.find_all(id='vrtx-semester-links')
@@ -54,27 +50,102 @@ def gatherCourseSchedule(semesterPage, semester):
     schedule_href = schedule_href[0]['href']
     print('scanning link :' + schedule_href)
     #visit schedule href 
-    schedulePage = BeautifulSoup(requests.get(schedule_href).text, "html.parser")
+    #schedulePage = BeautifulSoup(requests.get(schedule_href).text, "html.parser")
     
+    '''HER ENDRER JEG '''
+    #using selenium to expand schedule fields
+    driver.get(schedule_href)
 
-    #here we gather schedule info
-    schedules = schedulePage.find_all(class_='cs-toc-section-link')
+    activities = driver.find_elements(By.ID, "activities")#list of activities elements
 
-    #adding all teachings to lists
-    for event in schedules:
-        if 'forelesninger' in event.text.lower():
-            _course.formatToLecture(event.span.string)
-     
-       
-        elif 'gruppe' in event.text.lower():
-            groupName= event.text.split('-')[0].strip()
-            _course.formatToGroup(event.span.string, groupName )
-        else:
-            _course.formatToWorkshop(event.span.string)
-        #print(event.span.text)
-        #print(event.text)
+    print(len(activities))
+    for i in activities:
+
+
+        clickable = i.find_element(By.TAG_NAME, 'h3')
+        
+        driver.execute_script("arguments[0].click();", clickable)
+        driver.implicitly_wait(1) # seconds
+        scheduleRows= i.find_element(By.TAG_NAME, 'tbody')
+
+
+        #click o each element to get schedule 
+    
+        scrapeLectureTable(scheduleRows, _course)
+        #loop through the first 3 weeks of schedule to find course dates and times
+    
+        return
+'''
 
     _course.writeJsonFile()
+'''
+
+def scrapeLectureTable(tableDiv, course):
+    rows = tableDiv.find_elements(By.TAG_NAME, 'tr')
+    uniqueLectures= set() 
+    #every other row is a empty row which we will not scrape, starting from the first element
+    rowsToScrape= 12 #the more rows, the slower the script will be, we just want the recuring structure, not one random guest lecture in the semester
+    for i in range(1,rowsToScrape,2):
+     
+        date = rows[i].find_element(By.CLASS_NAME, 'date').text
+        if date==None or date=='':
+            continue
+        
+        date = formatDate(date)
+
+        time = rows[i].find_element(By.CLASS_NAME, 'time').find_elements(By.TAG_NAME, 'span')
+        # the first span wil not be scraped as it does not contain anything useful
+        start_time = time[1].text.strip('-')
+        end_time = time[2].text
+   
+        uniqueLectures.add(lecture(date, start_time, end_time)) 
+
+    for l in uniqueLectures:
+        course.addLecture(l)
+
+    course.printLectures()
+    print(len(uniqueLectures))
+
+
+def formatDate(str):
+    # example Tu. 20. Aug we are interrested in Tu
+
+    day = str.split(' ')
+    day= day[0].replace('.', '').lower()
+    match day:
+        case 'ma':
+            return 'man'
+        case 'mo':
+            return 'man'
+        
+        case 'ti':
+            return 'tir'
+        case 'tu':
+            return 'tir'
+
+        case 'on':
+            return 'ons'
+        case 'we':
+            return 'ons'
+
+        case 'to':
+            return 'tor'
+        case 'th':
+            return 'tor'
+
+        case 'fr':
+            return 'fre'
+        
+
+
+def scrapeGroupTable(tableDiv):
+    pass
+
+    
+
+def scrapeworkshopTable(tableDiv):
+    pass
+
 
 
 
