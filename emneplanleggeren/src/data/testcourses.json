@@ -1,0 +1,55 @@
+[
+  {
+    "id": "IN1000",
+
+    "name": "Introduksjon til objektorientert programmering",
+
+    "semester": "h24",
+
+    "lectures": [{ "day": "man", "startTime": 10.25, "endTime": 12.0 }],
+
+    "groups": [
+      {
+        "name": "gruppe 1",
+
+        "groupLectures": [
+          { "day": "tir", "startTime": 12.25, "endTime": 14.0 },
+
+          { "day": "tor", "startTime": 14.25, "endTime": 16.0 }
+        ]
+      }
+    ],
+    "workshops": []
+  },
+
+  {
+    "id": "IN1020",
+
+    "name": "Introduksjon til datamaskiner og databehandling",
+
+    "semester": "h24",
+
+    "lectures": [{ "day": "ons", "startTime": 12.25, "endTime": 14.0 }],
+
+    "groups": [
+      {
+        "name": "Gruppe 1",
+
+        "groupLectures": [{ "day": "tir", "startTime": 14.25, "endTime": 16.0 }]
+      },
+
+      {
+        "name": "Gruppe 2",
+
+        "groupLectures": [{ "day": "ons", "startTime": 14.25, "endTime": 16.0 }]
+      },
+
+      {
+        "name": "Gruppe 3",
+
+        "groupLectures": [{ "day": "tor", "startTime": 14.25, "endTime": 16.0 }]
+      }
+    ],
+    "workshops": []
+  }
+]
