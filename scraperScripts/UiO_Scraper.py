@@ -98,7 +98,7 @@ def gatherCourseSchedule(semesterPage, semester):
                 _course = scrapeTable(table[j], _course, activityType, None)
                 #loop through the first 3 weeks of schedule to find course dates and times
 
-    _course.readJsonFile('UiO.json')
+
     _course.writeJsonFile()
 
         
@@ -158,7 +158,7 @@ def scrapeTable(tableDiv, _course, activityType, _group): #group is none unless 
         _course.addLecture(l)
     for g in uniqueGroup:
         _group.addLecture(g)
-        _course.addGroup(_group)
+   
 
     for w in uniqueWorkshop:
         _course.addWorkshop(w)
@@ -230,9 +230,11 @@ def visitCoursePage(link, thisSemester, previousSemester):
 def main():
     start = time.time()
     #links = findAllCoursesLinks()
-
+    link1 = '/studier/emner/matnat/ifi/IN1000/'
+    link2 = '/studier/emner/matnat/ifi/IN5020/'
+    link3 = '/studier/emner/hf/ikos/KIN1010/'
     #test
-    visitCoursePage('/studier/emner/matnat/ifi/IN1000/', 'h24','v25')
+    visitCoursePage( link2, 'h24','v25')
     print("--- %s seconds ---" % (time.time()-start))
 main()
 

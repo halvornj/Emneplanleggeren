@@ -71,27 +71,29 @@ class course:
         )
 
     def writeJsonFile(self):
-        data = self.jsonExport()
-        with open('UiO.json', 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False)
-            self.readJsonFile('UiO.json')
+        try:
+            data = self.jsonExport()
+            with open('UiO.json', 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        except Exception as e:
+            print(f"Error writing JSON to file: {e}")
+        # Optionally read the file back to check its content
+        self.readJsonFile('UiO.json')
 
-    def readJsonFile(self, file ):
-        with open(file) as json_data:
-            d = json.load(json_data)
-            json_data.close()
-            print(d)
 
-    def isLecture(self, activity):
+    def readJsonFile(self, file):
+        try:
+            with open(file, 'r', encoding='utf-8') as json_data:
+                d = json.load(json_data)
+                print(d)
+        except FileNotFoundError:
+            print(f"File {file} not found.")
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON from file {file}: {e}")
+        except Exception as e:
+            print(f"Unexpected error reading JSON file {file}: {e}")
 
-        pass
 
-    def isGroupLecture(self):
-
-        pass 
-
-    def isWorkshop(self):
-        pass
 
     def convert_time_to_decimal(time_str):
         hours, minutes = map(int, time_str.split(':'))
