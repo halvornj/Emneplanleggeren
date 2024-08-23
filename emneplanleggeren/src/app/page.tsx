@@ -17,7 +17,6 @@ import { GroupLecture } from "@/model/GroupLecture";
 import ChosenBar from "@/components/ui/ChosenBar";
 import React, { use, useEffect, useState } from "react";
 import rawCourses from "@/data/UiO.json";
-import testCourses from "@/data/testcourses.json";
 import {
   Autocomplete,
   AutocompleteSection,
@@ -25,8 +24,7 @@ import {
 } from "@nextui-org/autocomplete";
 
 export default function Home() {
-  //const courses = JSON.parse(rawCourses) as Array<Course>;
-  const courses = testCourses as Array<Course>;
+  const courses = JSON.parse(rawCourses) as Array<Course>;
 
   const [activeCourses, setActiveCourses] = useState(
     new Map<Course, Group | null>([])

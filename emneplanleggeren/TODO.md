@@ -1,4 +1,5 @@
-todo: 
+todo:
 dropdown-arrow on group select
-center calendar :(
+center calendar
 more guide to search-bar
+add favicon
