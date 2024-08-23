@@ -1,0 +1,15 @@
+LESING AV SCHEDULE UIO
+
+div id="activities" - det kan vere flere men alle har overskrift og droppdown meny med foreesning og tabellene under
+
+    <a class=cs-toc-section-link>.text - dette er overskriften paa tabellen f.eks forelesning
+        <tbody>
+            <tr>
+                <td class=data>
+                    on. 21. aug.
+                <td class=time>
+                    <span> 12:15-
+                    <span> 14:00
+                <td class=>
+                <td class=>
+                <td class=>
