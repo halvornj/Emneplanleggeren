@@ -1,35 +1,21 @@
-import datetime
+from bs4 import BeautifulSoup
+import requests
+
 def scrapeAllUiOCourseLinks():
-    pass
+    URL = "https://www.uio.no/studier/emner/matnat/ifi/?filter.level=bachelor&filter.semester=h24&filter.teaching-language=norwegian"
+    page = BeautifulSoup(requests.get(URL).text, "html.parser")
+    #finding all the href links on the main index page
+    courses = page.find_all('td',class_='vrtx-course-description-name')
+    links = []
+    for link in courses:
+        for a in link.find_all('a', href=True):
+            links.append(a['href'])
+    print(links)
+    print(len(links))
+    return links
 
 def main():
     pass
 
 
-def convert_time_to_decimal(time_str):
-    # Splitt strengen i timer og minutter
-    hours, minutes = map(int, time_str.split(':'))
-    
-    # Kalkuler desimalverdien av minuttene
-    minutes_in_decimal = minutes / 60
-    
-    # Kombiner timer og desimalverdien av minuttene
-    decimal_time = hours + minutes_in_decimal
-    
-    # Formatér med maks 2 desimaler
-    formatted_time = f"{decimal_time:.2f}".rstrip('0').rstrip('.')
-    
-    return formatted_time
-
-# Eksempelbruk
-time_str = "08:15"
-result = convert_time_to_decimal(time_str)
-print(result)  # Output: 8.25
-
-time_str = "08:10"
-result = convert_time_to_decimal(time_str)
-print(result)  # Output: 8.17
-
-time_str = "08:07"
-result = convert_time_to_decimal(time_str)
-print(result)  # Output: 8.1
+scrapeAllUiOCourseLinks()

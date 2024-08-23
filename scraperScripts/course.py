@@ -6,8 +6,8 @@ import json
 
 class course:
  
-    def __init__(self, code, name, semester):
-        self.code = code 
+    def __init__(self, id, name, semester):
+        self.id = id
         self.name = name 
         self.semester = semester
         self.lectures=[]
