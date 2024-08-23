@@ -47,12 +47,6 @@ class course:
         #self.printWorkshops()
         return _workshop
 
-    def stringIsEnglish():
-        pass
-
-    def convertToNorwegian():
-        pass
-
     def printLectures(self):
         for lecture in self.lectures:
             print(lecture.day  + lecture.start_time + ' ' + lecture.end_time)
@@ -98,3 +92,11 @@ class course:
 
     def isWorkshop(self):
         pass
+
+    def convert_time_to_decimal(time_str):
+        hours, minutes = map(int, time_str.split(':'))
+        minutes_in_decimal = minutes / 60
+        decimal_time = hours + minutes_in_decimal
+        formatted_time = f"{decimal_time:.2f}".rstrip('0').rstrip('.')
+        return formatted_time
+

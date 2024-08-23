@@ -8,18 +8,13 @@ from workshop import workshop
 from selenium import webdriver 
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
 import time
 # -*- coding: utf-8 -*-
 
 driver = webdriver.Chrome()
 
-def driverTest():
-    print(driver.get("https://www.uio.no/studier/emner/alle/"))
-    driver.quit()
 
 #gathers all course page links and returns them in a list
 def findAllCoursesLinks():
@@ -88,8 +83,6 @@ def gatherCourseSchedule(semesterPage, semester):
                 driver.execute_script("arguments[0].click();", clickable[j])
 
                 table= i.find_elements(By.TAG_NAME, 'tbody')
-
-                print(len(table))
                 #click o each element to get schedule 
                 _course = scrapeTable(table[j], _course, activityType,_group)
                 #loop through the first 3 weeks of schedule to find course dates and times
@@ -100,7 +93,7 @@ def gatherCourseSchedule(semesterPage, semester):
                 driver.execute_script("arguments[0].click();", clickable[j])
 
                 table= i.find_elements(By.TAG_NAME, 'tbody')
-                print(len(table))
+    
                 #click o each element to get schedule 
                 _course = scrapeTable(table[j], _course, activityType, None)
                 #loop through the first 3 weeks of schedule to find course dates and times
@@ -139,7 +132,6 @@ def scrapeTable(tableDiv, _course, activityType, _group): #group is none unless 
     for i in range(1,rowsToScrape ,2):
         
         date = rows[i].find_element(By.CLASS_NAME, 'date').text
-        print(date)
 
         if date==None or date=='':
             continue
@@ -150,9 +142,9 @@ def scrapeTable(tableDiv, _course, activityType, _group): #group is none unless 
             time = rows[i].find_element(By.CLASS_NAME, 'time').find_elements(By.TAG_NAME, 'span')
 
             # the first span wil not be scraped as it does not contain anything useful
-            start_time = time[1].text.strip('–')
-            end_time = time[2].text
-            print(start_time)
+            start_time = float(course.convert_time_to_decimal(time[1].text.strip('–')))
+            end_time = float(course.convert_time_to_decimal(time[2].text))
+
             match activityType:
                 case 'lecture':
                     uniqueLecture.add(lecture(date, start_time, end_time)) 

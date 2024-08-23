@@ -13,7 +13,7 @@ class workshop:
         )
     '''this is needed for adding objects in set to find the unique patterns'''
     def __repr__(self):
-        return self.day + self.start_time + self.end_time
+        return self.day + str(self.start_time) + str(self.end_time)
     def __hash__(self):
         return hash(self.__repr__())
     
