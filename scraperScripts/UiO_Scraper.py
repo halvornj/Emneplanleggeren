@@ -1,13 +1,18 @@
 from bs4 import BeautifulSoup
 import requests
 from course import course
+from group import groupLecture
 from group import group
 from lecture import lecture
 from workshop import workshop
 from selenium import webdriver 
 from selenium.webdriver.common.by import By
-
-
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+import time
 # -*- coding: utf-8 -*-
 
 driver = webdriver.Chrome()
@@ -50,61 +55,125 @@ def gatherCourseSchedule(semesterPage, semester):
     schedule_href = schedule_href[0]['href']
     print('scanning link :' + schedule_href)
     #visit schedule href 
-    #schedulePage = BeautifulSoup(requests.get(schedule_href).text, "html.parser")
-    
-    '''HER ENDRER JEG '''
+
     #using selenium to expand schedule fields
     driver.get(schedule_href)
 
     activities = driver.find_elements(By.ID, "activities")#list of activities elements
 
-    print(len(activities))
+    
     for i in activities:
 
 
-        clickable = i.find_element(By.TAG_NAME, 'h3')
+        clickable = i.find_elements(By.TAG_NAME, 'h3')
+
+
+        '''maybe click all h3 first, lol this actually seems to be a must. '''
+        for j in range(0, len(clickable)):
+            driver.execute_script("arguments[0].click();", clickable[j])
+
+        for j in range(0,len(clickable)):
+            activityType= clickable[j].find_element(By.TAG_NAME, 'a').text.split(' ')[0][0:2]
+            activityType= formatActivityType(activityType)
+ 
+
+            
+            if activityType=='group':
+
+                name= clickable[j].find_element(By.TAG_NAME, 'a').text.split(' ')
+                name = name[0]+name[1]
+                _group= group(name)
+                _course.addGroup(_group)
+
+                driver.execute_script("arguments[0].click();", clickable[j])
+
+                table= i.find_elements(By.TAG_NAME, 'tbody')
+
+                print(len(table))
+                #click o each element to get schedule 
+                _course = scrapeTable(table[j], _course, activityType,_group)
+                #loop through the first 3 weeks of schedule to find course dates and times
+  
+
+            else :
+
+                driver.execute_script("arguments[0].click();", clickable[j])
+
+                table= i.find_elements(By.TAG_NAME, 'tbody')
+                print(len(table))
+                #click o each element to get schedule 
+                _course = scrapeTable(table[j], _course, activityType, None)
+                #loop through the first 3 weeks of schedule to find course dates and times
+
+    _course.readJsonFile('UiO.json')
+    _course.writeJsonFile()
+
         
-        driver.execute_script("arguments[0].click();", clickable)
-        driver.implicitly_wait(1) # seconds
-        scheduleRows= i.find_element(By.TAG_NAME, 'tbody')
-
-
-        #click o each element to get schedule 
-    
-        scrapeLectureTable(scheduleRows, _course)
-        #loop through the first 3 weeks of schedule to find course dates and times
-    
-        return
-'''
+    '''
 
     _course.writeJsonFile()
 '''
+def formatActivityType(str):
+    str= str.lower()
+    match str:
+        case 'fo':
+            return 'lecture'
+        case 'pl':
+            return 'lecture'
+        case 'le':
+            return 'lecture'
+        case 'gr':
+            return 'group'
+        case 'se':
+            return 'group'
+    return 'workshop'
 
-def scrapeLectureTable(tableDiv, course):
+
+def scrapeTable(tableDiv, _course, activityType, _group): #group is none unless passing a group object
     rows = tableDiv.find_elements(By.TAG_NAME, 'tr')
-    uniqueLectures= set() 
+    uniqueLecture= set() 
+    uniqueGroup= set()
+    uniqueWorkshop= set()
     #every other row is a empty row which we will not scrape, starting from the first element
-    rowsToScrape= 12 #the more rows, the slower the script will be, we just want the recuring structure, not one random guest lecture in the semester
-    for i in range(1,rowsToScrape,2):
-     
+    rowsToScrape= len(rows)#the more rows, the slower the script will be, we just want the recuring structure, not one random guest lecture i:n the semester
+    for i in range(1,rowsToScrape ,2):
+        
         date = rows[i].find_element(By.CLASS_NAME, 'date').text
+        print(date)
+
         if date==None or date=='':
             continue
+        else:
+            date = formatDate(date)
+
         
-        date = formatDate(date)
+            time = rows[i].find_element(By.CLASS_NAME, 'time').find_elements(By.TAG_NAME, 'span')
 
-        time = rows[i].find_element(By.CLASS_NAME, 'time').find_elements(By.TAG_NAME, 'span')
-        # the first span wil not be scraped as it does not contain anything useful
-        start_time = time[1].text.strip('-')
-        end_time = time[2].text
-   
-        uniqueLectures.add(lecture(date, start_time, end_time)) 
+            # the first span wil not be scraped as it does not contain anything useful
+            start_time = time[1].text.strip('–')
+            end_time = time[2].text
+            print(start_time)
+            match activityType:
+                case 'lecture':
+                    uniqueLecture.add(lecture(date, start_time, end_time)) 
+                case 'group':
+                    uniqueGroup.add(groupLecture(date, start_time, end_time)) 
+                    
+                case 'workshop':
+                    uniqueWorkshop.add(workshop(date, start_time, end_time)) 
 
-    for l in uniqueLectures:
-        course.addLecture(l)
+    for l in uniqueLecture:
+        _course.addLecture(l)
+    for g in uniqueGroup:
+        _group.addLecture(g)
+        _course.addGroup(_group)
 
-    course.printLectures()
-    print(len(uniqueLectures))
+    for w in uniqueWorkshop:
+        _course.addWorkshop(w)
+
+    return _course
+
+
 
 
 def formatDate(str):
@@ -135,18 +204,6 @@ def formatDate(str):
 
         case 'fr':
             return 'fre'
-        
-
-
-def scrapeGroupTable(tableDiv):
-    pass
-
-    
-
-def scrapeworkshopTable(tableDiv):
-    pass
-
-
 
 
 #helping function, takes string example v24 or h24, 
@@ -179,17 +236,12 @@ def visitCoursePage(link, thisSemester, previousSemester):
     gatherCourseSchedule(page,semester)
 
 def main():
-
-    links = findAllCoursesLinks()
-    #now that we have all the links we can visit each course and gather data
+    start = time.time()
+    #links = findAllCoursesLinks()
 
     #test
     visitCoursePage('/studier/emner/matnat/ifi/IN1000/', 'h24','v25')
-
-    #for link in links:
-        #visitCoursePage(link, 'Høst 2024')
-    
-
+    print("--- %s seconds ---" % (time.time()-start))
 main()
 
 

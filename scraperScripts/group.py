@@ -19,3 +19,6 @@ class group():
             self,
             default=lambda o: o.__dict__, 
         )
+    def printGroup(self):
+        for l in self.groupLectures:
+            print(l.__repr__())
