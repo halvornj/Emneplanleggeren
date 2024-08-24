@@ -1,65 +1,36 @@
-# Emneplanleggeren
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-### requirements
+## Getting Started
 
-- node v20.15.1
+First, run the development server:
 
-This is an opensource project for course planning at universities and colleges. The course data can be scraped or entered mannually by contributers in a json file belonging to the course's university or college.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-The json format is as followed:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-{
-"code": "IN1000",
-"name": "Introduksjon til objektorientert programmering",
-"semester": "h24",
-"lectures": [
-{
-"day": "ons",
-"start_time": " 12:15",
-"end_time": "14:00"
-}
-],
-"groups": [
-{
-"name": "Gruppe 1 design",
-"groupLectures": [
-{
-"day": "man",
-"start_time": " 12:15",
-"end_time": "14:00"
-},
-{
-"day": "tor",
-"start_time": " 12:15",
-"end_time": "14:00"
-}
-]
-}
-],
-"workshops": [
-{
-"day": "tor",
-"start_time": " 08:15",
-"end_time": "10:00"
-},
-{
-"day": "fre",
-"start_time": " 14:15",
-"end_time": "18:00"
-}
-]
-}
-the objects are:
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- Course
-  Where 'code' is the course identifier,
-  'name' is the name of the course,
-  'semester' is the season followed by year in the format h24 meaning spring 2025 and h25 meaning autumn 2024,
-  'lectures' is a list of lecture objects
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-- Lecture
-  'day' can be in english or norwegian, always contains only the first three letters of the day like mon, tue and so on
-  'start_time'
-  'end_time'
+## Learn More
 
-  MORE DOCUMENTATION WILL BE ADDED SOON
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
