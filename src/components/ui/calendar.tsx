@@ -226,7 +226,7 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
               <td className="p-2 border relative">{boxesByPeriod[4][9]} </td>
             </tr>
             <tr>
-              <td className="border">17:00</td>
+              <td className="border">18:00</td>
               <td className="p-2 border relative">{boxesByPeriod[0][10]} </td>
               <td className="p-2 border relative">{boxesByPeriod[1][10]} </td>
               <td className="p-2 border relative">{boxesByPeriod[2][10]} </td>
