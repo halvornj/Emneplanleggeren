@@ -24,6 +24,9 @@ import {
 } from "@nextui-org/autocomplete";
 
 export default function Home() {
+  //const courses :Array<Course> = JSON.parse(rawCourses).map((course: string) => {
+  //  return JSON.parse(course) as Course;
+  //});
   const courses = JSON.parse(rawCourses) as Array<Course>;
 
   const [activeCourses, setActiveCourses] = useState(
@@ -81,7 +84,7 @@ export default function Home() {
       }).length == 0
     ) {
       //if the key of the seletced course is not already in the selected courses
-      const course = courses.find((course) => {
+      const course = courses.find((course: Course) => {
         return course.id == key.toString();
       }) as Course;
       if (course.groups.length == 0) {
@@ -108,7 +111,7 @@ export default function Home() {
             }
           }}
         >
-          {(item) => (
+          {(item: Course) => (
             <AutocompleteItem key={item.id}>{item.id}</AutocompleteItem>
           )}
         </Autocomplete>
