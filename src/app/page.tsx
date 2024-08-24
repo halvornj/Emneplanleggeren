@@ -49,7 +49,12 @@ export default function Home() {
       //if we're supposed to add the course
 
       const truncatedCourse = { ...course };
-      truncatedCourse.groups = [selectedGroup];
+      //!this is a stupid hotfix for the mvp, the use of groups as a flag for if a course is active is stupid and should be changed
+      if (selectedGroup.name == "") {
+        truncatedCourse.groups = [];
+      } else {
+        truncatedCourse.groups = [selectedGroup];
+      }
       const newDisplayCourses = displayCourses.filter((displayCourse) => {
         return displayCourse.id != course.id;
       });
@@ -88,7 +93,9 @@ export default function Home() {
         return course.id == key.toString();
       }) as Course;
       if (course.groups.length == 0) {
+        //we're trying to turn on a course with no groups, but I'm stupid and used groups as the identifier for if they're active.
         setActiveCourses(new Map(activeCourses.set(course, null)));
+        toggleCourse(course, new Group(""));
       } else {
         setActiveCourses(new Map(activeCourses.set(course, course.groups[0])));
         toggleCourse(course, course.groups[0]);

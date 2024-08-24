@@ -7,14 +7,23 @@ import { CSSProperties } from "react";
 import { useState } from "react";
 
 export default function Calendar({ courses }: { courses: Array<Course> }) {
-  const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16];
-  const days = ["man", "tir", "ons", "tor", "fre"];
+  const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]; //todo refactor to map, ezpz
+  const days = new Map<string, number>([
+    ["man", 0],
+    ["tir", 1],
+    ["ons", 2],
+    ["tor", 3],
+    ["fre", 4],
+  ]);
   //TODO find more colors, and test them to see if they are visible
   // sky-300, yellow-300, purple-300
   const colors = [
     "rgba(125, 211, 252,0.6)",
     "rgba(253, 224, 71, 0.6)",
     "rgba(216, 180, 254,0.6)",
+    "rgba(255, 138, 101,0.6)",
+    "rgba(255, 180, 160, 0.6)",
+    "rgba(140, 209, 140, 0.6)",
   ];
 
   const codeColorMap = new Map<string, string>();
@@ -23,20 +32,18 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
   //this could be removed later by rewriting the json and models to reference the other way
   const lectureCourseIds = new Map<Lecture, string>();
   const coursesByPeriod: Array<Array<Array<Lecture>>> = [
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
   ];
   const boxesByPeriod: Array<Array<Array<JSX.Element>>> = [
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
-    [[], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], [], [], []],
   ];
 
   courses.forEach((course) => {
@@ -45,7 +52,7 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
     }
     course.lectures.forEach((lecture) => {
       try {
-        coursesByPeriod[days.indexOf(lecture.day)][
+        coursesByPeriod[days.get(lecture.day)!][
           hours.indexOf(Math.floor(lecture.startTime))
         ].push(lecture);
         lectureCourseIds.set(lecture, course.id);
@@ -55,7 +62,7 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
       }
     });
     course.workshops.forEach((workshop) => {
-      coursesByPeriod[days.indexOf(workshop.day)][
+      coursesByPeriod[days.get(workshop.day)!][
         hours.indexOf(Math.floor(workshop.startTime))
       ].push(workshop);
       lectureIsGroup.set(workshop, "workshop");
@@ -65,7 +72,7 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
     course.groups.forEach((group) => {
       try {
         group.groupLectures.forEach((groupLecture) => {
-          coursesByPeriod[days.indexOf(groupLecture.day)][
+          coursesByPeriod[days.get(groupLecture.day)!][
             hours.indexOf(Math.floor(groupLecture.startTime))
           ].push(groupLecture);
           lectureIsGroup.set(groupLecture, group.name);
@@ -217,6 +224,14 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
               <td className="p-2 border relative">{boxesByPeriod[2][9]} </td>
               <td className="p-2 border relative">{boxesByPeriod[3][9]} </td>
               <td className="p-2 border relative">{boxesByPeriod[4][9]} </td>
+            </tr>
+            <tr>
+              <td className="border">17:00</td>
+              <td className="p-2 border relative">{boxesByPeriod[0][10]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[1][10]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[2][10]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[3][10]} </td>
+              <td className="p-2 border relative">{boxesByPeriod[4][10]} </td>
             </tr>
           </tbody>
         </table>
