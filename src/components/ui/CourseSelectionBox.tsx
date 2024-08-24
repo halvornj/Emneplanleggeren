@@ -21,9 +21,13 @@ export default function CourseSelectionBox({
   checkFunction: (course: Course, selectedGroup: Group | null) => void;
   removeFunction: (course: Course) => void;
 }) {
-  const [selectedKeys, setSelectedKeys] = React.useState(
-    new Set([course.groups[0].name ?? "ingen grupper"])
-  );
+  const [selectedKeys, setSelectedKeys] = React.useState(() => {
+    if (course.groups.length == 0) {
+      return new Set(["ingen grupper"]);
+    } else {
+      return new Set([course.groups[0].name ?? "ingen grupper"]); //default to first group, it has to exist here because else branch but js/ts doesn't have smart-cast, Kotlin-master-race
+    }
+  });
 
   const handleSelectionChange = (keys: SharedSelection) => {
     if (typeof keys === "string") {
