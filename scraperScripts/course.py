@@ -66,7 +66,7 @@ class course:
         return json.dumps(
             self,
             default=lambda o: o.__dict__, 
-            indent=4,
+            indent=0,
             ensure_ascii=False
         )
 
@@ -74,7 +74,7 @@ class course:
         try:
             data = self.jsonExport()
             with open('UiO.json', 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+                json.dump(data, f, ensure_ascii=False)
         except Exception as e:
             print(f"Error writing JSON to file: {e}")
         # Optionally read the file back to check its content

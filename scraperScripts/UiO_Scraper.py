@@ -185,11 +185,12 @@ def visitCoursePage(link, thisSemester, previousSemester):
 
 def main():
     start = time.time()
-    links = scrapeAllUiOCourseLinks()
+    #links = scrapeAllUiOCourseLinks()
     link1 = '/studier/emner/matnat/ifi/IN1000/'
     link2 = '/studier/emner/matnat/ifi/IN5020/'
     link3 = '/studier/emner/hf/ikos/KIN1010/'
     #test
+    links = [link2]
     courses =[]
 
  
@@ -197,15 +198,23 @@ def main():
     for link in links:
         scanned= 0
         try:
-            courses.append(visitCoursePage( link, 'h24','v25').jsonExport())
+            courses.append(visitCoursePage( link, 'h24','v25' ).jsonExport())
             scanned+=1
         except:
             print('could not scan ' + link)
             continue
-        
+
     try:
+        courses=  json.dumps(
+            courses,
+            default=lambda o: o.__dict__, 
+            indent=4,
+            ensure_ascii=False
+        )
+        
         with open('UiO.json', 'w', encoding='utf-8') as f:
-            json.dump(courses, f, ensure_ascii=False, indent=4)
+            json.dump(courses,f,default=lambda o: o.__dict__,  indent=0,ensure_ascii=False)
+            
     except Exception as e:
         print(f"Error writing JSON to file: {e}")
     # Optionally read the file back to check its content

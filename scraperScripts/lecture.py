@@ -10,8 +10,8 @@ class lecture:
     def jsonExport(self):
         return json.dumps(
             self,
-            default=lambda o: o.__dict__
-            
+            default=lambda o: o.__dict__,
+            indent=0
         )
     '''this is needed for adding objects in set to find the unique patterns'''
     def __repr__(self):

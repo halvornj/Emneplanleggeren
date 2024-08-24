@@ -18,6 +18,7 @@ class group():
         return json.dumps(
             self,
             default=lambda o: o.__dict__, 
+            indent=0
         )
     def printGroup(self):
         for l in self.groupLectures:
