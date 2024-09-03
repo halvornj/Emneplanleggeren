@@ -36,7 +36,7 @@ export default function ChosenBar({
     );
   });
   return (
-    <div className="w-11/12 items-center p-4 bg-white rounded shadow">
+    <div className="w-11/12 items-center p-4 bg-white rounded shadow overflow-x-auto">
       <h2 className="text-xl font-bold mb-4">Valgte emner</h2>
       <div className="flex w-full h-full space-x-3">{courseDivs}</div>
     </div>

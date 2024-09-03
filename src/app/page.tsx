@@ -128,7 +128,6 @@ export default function Home() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="uio">UiO</SelectItem>
-            <SelectItem value="ntnu">NTNU</SelectItem>
           </SelectContent>
         </Select>
       </div>

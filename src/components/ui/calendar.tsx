@@ -16,14 +16,19 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
     ["fre", 4],
   ]);
   //TODO find more colors, and test them to see if they are visible
-  // sky-300, yellow-300, purple-300
   const colors = [
-    "rgba(125, 211, 252,0.6)",
-    "rgba(253, 224, 71, 0.6)",
-    "rgba(216, 180, 254,0.6)",
-    "rgba(255, 138, 101,0.6)",
-    "rgba(255, 180, 160, 0.6)",
-    "rgba(140, 209, 140, 0.6)",
+    "rgba(125, 211, 252,0.6)", // sky-300
+    "rgba(253, 224, 71, 0.6)", // yellow-300
+    "rgba(216, 180, 254,0.6)", // purple-300
+    "rgba(255, 138, 101,0.6)", // pale red
+    "rgba(255, 180, 160, 0.6)", // pastel pink
+    "rgba(140, 209, 140, 0.6)", // faded green
+    "rgba(255, 182, 193, 0.6)", // light pink
+    "rgba(173, 216, 230, 0.6)", // light blue
+    "rgba(144, 238, 144, 0.6)", // light green
+    "rgba(255, 222, 173, 0.6)", // light peach
+    "rgba(221, 160, 221, 0.6)", // plum
+    "rgba(240, 230, 140, 0.6)", // khaki
   ];
 
   const codeColorMap = new Map<string, string>();
@@ -117,21 +122,21 @@ export default function Calendar({ courses }: { courses: Array<Course> }) {
             <tr>
               <th
                 scope="col"
-                className="w-1/10 p-0 text-right text-sm bg-gray-100 font-normal border-none"
+                className="w-1/10 text-right text-sm bg-gray-100 font-normal border-none"
               ></th>
-              <th scope="col" className="w-1/6 p-2 border">
+              <th scope="col" className="w-1/5 p-2 border">
                 Man.
               </th>
-              <th scope="col" className="w-1/6 p-2 border">
+              <th scope="col" className="w-1/5 p-2 border">
                 Tir.
               </th>
-              <th scope="col" className="w-1/6 p-2 border">
+              <th scope="col" className="w-1/5 p-2 border">
                 Ons.
               </th>
-              <th scope="col" className="w-1/6 p-2 border">
+              <th scope="col" className="w-1/5 p-2 border">
                 Tor.
               </th>
-              <th scope="col" className="w-1/6 p-2 border">
+              <th scope="col" className="w-1/5 p-2 border">
                 Fre.
               </th>
             </tr>
