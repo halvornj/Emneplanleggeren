@@ -185,12 +185,12 @@ def visitCoursePage(link, thisSemester, previousSemester):
 
 def main():
     start = time.time()
-    #links = scrapeAllUiOCourseLinks()
-    link1 = '/studier/emner/matnat/ifi/IN1000/'
-    link2 = '/studier/emner/matnat/ifi/IN5020/'
-    link3 = '/studier/emner/hf/ikos/KIN1010/'
+    links = scrapeAllUiOCourseLinks()
+    #link1 = '/studier/emner/matnat/ifi/IN1000/'
+    #link2 = '/studier/emner/matnat/ifi/IN5020/'
+    #link3 = '/studier/emner/hf/ikos/KIN1010/'
     #test
-    links = [link2]
+    #links = [link2]
     courses =[]
 
  
@@ -200,8 +200,8 @@ def main():
         try:
             courses.append(visitCoursePage( link, 'h24','v25' ).jsonExport())
             scanned+=1
-        except:
-            print('could not scan ' + link)
+        except Exception as e:
+            print(f"could not scan {link}: {e}")
             continue
 
     try:
