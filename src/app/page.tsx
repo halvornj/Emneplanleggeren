@@ -22,12 +22,18 @@ import {
   AutocompleteSection,
   AutocompleteItem,
 } from "@nextui-org/autocomplete";
+import { useAsyncList } from "@react-stately/data";
 
 export default function Home() {
   //const courses :Array<Course> = JSON.parse(rawCourses).map((course: string) => {
   //  return JSON.parse(course) as Course;
   //});
-  const courses = JSON.parse(rawCourses) as Array<Course>;
+  //const courses = JSON.parse(rawCourses) as Array<Course>;
+  const courses = useAsyncList<Course>({
+    async load() {
+      return { items: JSON.parse(rawCourses) };
+    },
+  });
 
   const [activeCourses, setActiveCourses] = useState(
     new Map<Course, Group | null>([])
@@ -83,13 +89,14 @@ export default function Home() {
   }
 
   function onSelectionChange(key: React.Key) {
+    courses.setFilterText("");
     if (
       Array.from(activeCourses.keys()).filter((course) => {
         return course.id == key.toString();
       }).length == 0
     ) {
       //if the key of the seletced course is not already in the selected courses
-      const course = courses.find((course: Course) => {
+      const course = courses.items.find((course: Course) => {
         return course.id == key.toString();
       }) as Course;
       if (course.groups.length == 0) {
@@ -110,13 +117,16 @@ export default function Home() {
           label="emnekode"
           color={"default"}
           className="flex-1"
-          defaultItems={courses}
+          inputValue={courses.filterText}
+          isLoading={courses.isLoading}
+          defaultItems={courses.items}
           onSelectionChange={(key) => {
             if (key != null) {
               //stupid hack to make sure input is valid
               onSelectionChange(key);
             }
           }}
+          onInputChange={courses.setFilterText}
         >
           {(item: Course) => (
             <AutocompleteItem key={item.id}>{item.id}</AutocompleteItem>
