@@ -46,7 +46,6 @@ export default function Home() {
     course: Course,
     selectedGroup: Group | null
   ) {
-    console.debug("Toggling course", course, selectedGroup);
     if (!activeCourses.has(course)) {
       console.error("Course not in active ActiveCourses, cannot be toggled!");
       return;
@@ -89,7 +88,6 @@ export default function Home() {
   }
 
   function onSelectionChange(key: React.Key) {
-    console.debug("OOOOOGA BOOOOGA");
     courses.setFilterText("");
     if (
       Array.from(activeCourses.keys()).filter((course) => {
