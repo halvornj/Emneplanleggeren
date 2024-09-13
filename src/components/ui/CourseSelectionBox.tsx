@@ -11,6 +11,18 @@ import {
   DropdownItem,
 } from "@nextui-org/dropdown";
 import { SharedSelection } from "@nextui-org/system";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUp01,
+  ArrowUp01Icon,
+  ArrowUpCircle,
+  ArrowUpFromDot,
+  ArrowUpFromLine,
+  ArrowUpIcon,
+  ArrowUpSquare,
+  Triangle,
+} from "lucide-react";
 
 export default function CourseSelectionBox({
   course,
@@ -28,6 +40,7 @@ export default function CourseSelectionBox({
       return new Set([course.groups[0].name ?? "ingen grupper"]); //default to first group, it has to exist here because else branch but js/ts doesn't have smart-cast, Kotlin-master-race
     }
   });
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const handleSelectionChange = (keys: SharedSelection) => {
     if (typeof keys === "string") {
@@ -56,6 +69,15 @@ export default function CourseSelectionBox({
     //if has been shortened, add ellipsis
     abbrCourseName += "...";
   }
+
+  function Arrow() {
+    if (isOpen) {
+      return <ArrowUp size={20} opacity={0.5} />;
+    } else {
+      return <ArrowDown size={20} opacity={0.5} />;
+    }
+  }
+
   return (
     <div key={course.id} className="flex items-center space-x-2">
       <Checkbox
@@ -85,14 +107,19 @@ export default function CourseSelectionBox({
         <br />
         <span className="text-xs text-gray-500">{abbrCourseName}</span>
 
-        <Dropdown>
+        <Dropdown
+          onOpenChange={(isOpen) => {
+            setIsOpen(isOpen);
+          }}
+        >
           <DropdownTrigger>
             <Button variant="bordered" className="capitalize">
               {selectedValue}
+              <Arrow />
             </Button>
           </DropdownTrigger>
           <DropdownMenu
-            aria-label="Single selection example"
+            aria-label="select group"
             variant="flat"
             disallowEmptySelection
             selectionMode="single"
