@@ -89,6 +89,7 @@ export default function Home() {
   }
 
   function onSelectionChange(key: React.Key) {
+    console.debug("OOOOOGA BOOOOGA");
     courses.setFilterText("");
     if (
       Array.from(activeCourses.keys()).filter((course) => {

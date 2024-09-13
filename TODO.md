@@ -12,5 +12,5 @@ remove search bar contents on run search
 ## SCRAPING:
 
 - don't double-jsonify the data
-- check if course id contains numbers - if not, id = list[1], name = list[2] (see fys-mena4111 - kvantemekanisk modellering av nanomaterialer)
+- check if course id contains numbers - if not, id = list[1], name = list[2] (see fys-mena4111 - kvantemekanisk modellering av nanomaterialer) -- manually fixed for now.
 - change model start_time and end_time to startTime and endTime
