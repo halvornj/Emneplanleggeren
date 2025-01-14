@@ -13,6 +13,7 @@ from selenium.webdriver.common.by import By
 import time
 import json
 from findCourseLinks import scrapeAllUiOCourseLinks
+import sys
 # -*- coding: utf-8 -*-
 #fun with ubuntu
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -188,8 +189,12 @@ def visitCoursePage(link, thisSemester, previousSemester):
     return gatherCourseSchedule(page,semester)
 
 def main():
+	#failsafing
+    if len(sys.argv) != 2: 
+        print("error: program must be called with semester to gather data for as parameter, e.g:\npython3 UiO_Scraper.py v25")
+        quit()
     start = time.time()
-    links = scrapeAllUiOCourseLinks()
+    links = scrapeAllUiOCourseLinks(sys.argv[1])
     #link1 = '/studier/emner/matnat/ifi/IN1000/'
     #link2 = '/studier/emner/matnat/ifi/IN5020/'
     #link3 = '/studier/emner/hf/ikos/KIN1010/'
@@ -202,7 +207,14 @@ def main():
     for link in links:
         scanned= 0
         try:
-            courses.append(visitCoursePage( link, 'v25', 'h25' ).jsonExport())
+            nextSemester = ""
+	    if sys.argv[1][0] == "v":
+		nextSemester = "h"+sys.argv[1][1::]
+	    else:
+		nextSemester = "v"+ str(int(sys.argv[1][1::])+1)
+            
+            #todo nextsemester
+            courses.append(visitCoursePage( link, sys.argv[1], nextSemester).jsonExport())
             scanned+=1
         except Exception as e:
             print(f"could not scan {link}: {e}")
@@ -226,6 +238,7 @@ def main():
     print("--- %s seconds ---" % (time.time()-start))
     print('scanned ' + str(scanned) + ' out of ' + str(len(links)))
 main()
+
 
 
 

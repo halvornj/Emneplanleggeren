@@ -7,9 +7,9 @@ def getLinksForPage(page, links):
         for a in link.find_all('a', href=True):
             links.append(a['href'])
 
-def scrapeAllUiOCourseLinks():
+def scrapeAllUiOCourseLinks(semester):
     pageNo = 1
-    baseURL = "https://www.uio.no/studier/emner/alle/?filter.semester=h24&filter.teaching-language=norwegian"
+    baseURL = "https://www.uio.no/studier/emner/alle/?filter.semester="+semester
     links = []
     page = BeautifulSoup(requests.get(baseURL).text, "html.parser")
 #finding all the href links on the main index page
