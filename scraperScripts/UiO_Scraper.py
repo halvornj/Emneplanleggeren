@@ -14,8 +14,12 @@ import time
 import json
 from findCourseLinks import scrapeAllUiOCourseLinks
 # -*- coding: utf-8 -*-
+#fun with ubuntu
+from selenium.webdriver.chrome.service import Service as ChromeService
 
-driver = webdriver.Chrome()
+service = ChromeService(executable_path="/usr/bin/chromedriver")
+
+driver = webdriver.Chrome(service=service)
 
 
 
@@ -198,7 +202,7 @@ def main():
     for link in links:
         scanned= 0
         try:
-            courses.append(visitCoursePage( link, 'h24','v25' ).jsonExport())
+            courses.append(visitCoursePage( link, 'v25', 'h25' ).jsonExport())
             scanned+=1
         except Exception as e:
             print(f"could not scan {link}: {e}")
