@@ -53,26 +53,34 @@ def gatherCourseSchedule(semesterPage, semester):
 
     activities = driver.find_elements(By.ID, "activities")#list of activities elements
 
-    
+    #activities is the div containing the expandable fields. should probably not be a list?
     for i in activities:
 
         clickable = i.find_elements(By.TAG_NAME, 'h3')
 
         '''maybe click all h3 first, lol this actually seems to be a must. '''
         for j in range(0, len(clickable)):
+
             driver.execute_script("arguments[0].click();", clickable[j])
+
+            #hardcoding a wait to not get stale elements
+            driver.implicitly_wait(1)
 
         for j in range(0,len(clickable)):
             activityType= clickable[j].find_element(By.TAG_NAME, 'a').text.split(' ')[0][0:2]
             activityType= formatActivityType(activityType)
-            
+
             if activityType=='group':
 
                 name= clickable[j].find_element(By.TAG_NAME, 'a').text.split(' ')
                 name = name[0]+name[1]
                 _group= group(name)
                 _course.addGroup(_group)
+
                 driver.execute_script("arguments[0].click();", clickable[j])
+                #hardcoding dumb wait, TODO WebDriverWait
+                driver.implicitly_wait(1)
+
                 table= i.find_elements(By.TAG_NAME, 'tbody')
                 #click o each element to get schedule 
                 _course = scrapeTable(table[j], _course, activityType,_group)
@@ -81,6 +89,10 @@ def gatherCourseSchedule(semesterPage, semester):
             else :
 
                 driver.execute_script("arguments[0].click();", clickable[j])
+
+                #!hardcoded wait
+                driver.implicitly_wait(1)
+
                 table= i.find_elements(By.TAG_NAME, 'tbody')
                 #click o each element to get schedule 
                 _course = scrapeTable(table[j], _course, activityType, None)
@@ -194,26 +206,27 @@ def main():
         print("error: program must be called with semester to gather data for as parameter, e.g:\npython3 UiO_Scraper.py v25")
         quit()
     start = time.time()
+    
     links = scrapeAllUiOCourseLinks(sys.argv[1])
     #link1 = '/studier/emner/matnat/ifi/IN1000/'
     #link2 = '/studier/emner/matnat/ifi/IN5020/'
     #link3 = '/studier/emner/hf/ikos/KIN1010/'
-    #test
-    #links = [link2]
+    #link4 = '/studier/emner/matnat/ifi/IN3240/'
+    #link5 = '/studier/emner/matnat/ifi/IN3260/'
+    #link6 = '/studier/emner/matnat/ifi/IN3000/'
+    #links = [link1, link4, link5, link6]
     courses =[]
 
  
-
+    scanned = 0
     for link in links:
-        scanned= 0
         try:
             nextSemester = ""
-	    if sys.argv[1][0] == "v":
-		nextSemester = "h"+sys.argv[1][1::]
-	    else:
-		nextSemester = "v"+ str(int(sys.argv[1][1::])+1)
+            if sys.argv[1][0] == "v":
+                nextSemester = "h"+sys.argv[1][1::]
+            else:
+                nextSemester = "v"+ str(int(sys.argv[1][1::])+1)
             
-            #todo nextsemester
             courses.append(visitCoursePage( link, sys.argv[1], nextSemester).jsonExport())
             scanned+=1
         except Exception as e:
@@ -237,7 +250,9 @@ def main():
 
     print("--- %s seconds ---" % (time.time()-start))
     print('scanned ' + str(scanned) + ' out of ' + str(len(links)))
-main()
+
+
+if __name__ == "__main__": main()
 
 
 
